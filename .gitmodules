@@ -1,0 +1,12 @@
+[submodule "dss-ansible"]
+	path = dss-ansible
+	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-ansible.git
+[submodule "dss-ecosystem"]
+	path = dss-ecosystem
+	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-ecosystem.git
+[submodule "dss-minio"]
+	path = dss-minio
+	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-minio.git
+[submodule "dss-sdk"]
+	path = dss-sdk
+	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-sdk.git
