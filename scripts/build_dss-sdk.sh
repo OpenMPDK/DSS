@@ -35,17 +35,21 @@ set -e
 
 # Set directory variables
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR="${SCRIPT_DIR}/.."
-ARTIFACTS_DIR="${DSS_DIR}/../artifacts"
+DSS_DIR=$(realpath "$SCRIPT_DIR/..")
+DSS_SDK_DIR="$DSS_DIR/dss-sdk"
+ANSIBLE_DIR="$DSS_DIR/dss-ansible"
+ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+
+# Check for ARTIFACTS_DIR
+if [ ! -d "$ARTIFACTS_DIR" ]
+then
+    echo 'Artifacts dir not present.'
+    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
+    exit 1
+fi
 
 # Build nkv-sdk all w/ kdd-samsung-remote. Use local nkv-openmpdk repo for patch
-pushd "${SCRIPT_DIR}/../nkv-sdk/scripts"
-    git fetch --tags
-    ./build_all.sh kdd-samsung-remote -p "${DSS_DIR}/nkv-openmpdk/"
-popd
-
-# Create artifacts dirs
-mkdir -p "${ARTIFACTS_DIR}"
+"$DSS_SDK_DIR/scripts/build_all.sh" kdd-samsung-remote
 
 # Set artifacts build directory paths
 target_build_dir="${DSS_DIR}/nkv-sdk/df_out"
@@ -54,38 +58,16 @@ nkv_agent_build_dir="${DSS_DIR}/nkv-sdk/ufm/agents/nkv_agent"
 ufm_build_dir="${DSS_DIR}/nkv-sdk/ufm/fabricmanager"
 ufm_broker_build_dir="${DSS_DIR}/nkv-sdk/ufm/ufm_msg_broker"
 
-# Remove existing artifacts from Ansible artifact directory
 echo "Removing existing artifacts from artifacts directory"
-pushd "${ARTIFACTS_DIR}"
-    rm -f nkv-target-*.tgz
-    rm -f nkv-sdk-bin-*.tgz
-    rm -f nkvagent-*.rpm
-    rm -f ufm-*.rpm
-    rm -f ufmbroker-*.rpm
-popd
+rm -f "${ARTIFACTS_DIR}"/nkv-target-*.tgz
+rm -f "${ARTIFACTS_DIR}"/nkv-sdk-bin-*.tgz
+rm -f "${ARTIFACTS_DIR}"/nkvagent-*.rpm
+rm -f "${ARTIFACTS_DIR}"/ufm-*.rpm
+rm -f "${ARTIFACTS_DIR}"/ufmbroker-*.rpm
 
 echo "Copying artifacts to artifacts directory"
-# Copy target tarball
-pushd "${target_build_dir}"
-    cp nkv-target-*.tgz "${ARTIFACTS_DIR}"
-popd
-
-# Copy host tarball
-pushd "${host_build_dir}"
-    cp nkv-sdk-bin-*.tgz "${ARTIFACTS_DIR}"
-popd
-
-# Copy NKV Agent RPM
-pushd "${nkv_agent_build_dir}"
-    cp nkvagent-*.rpm "${ARTIFACTS_DIR}"
-popd
-
-# Copy UFM RPM
-pushd "${ufm_build_dir}"
-    cp ufm-*.rpm "${ARTIFACTS_DIR}"
-popd
-
-# Copy UFM Broker RPM
-pushd "${ufm_broker_build_dir}"
-    cp ufmbroker-*.rpm "${ARTIFACTS_DIR}"
-popd
+cp "${target_build_dir}"/nkv-target-*.tgz "${ARTIFACTS_DIR}"
+cp "${host_build_dir}"/nkv-sdk-bin-*.tgz "${ARTIFACTS_DIR}"
+cp "${nkv_agent_build_dir}"/nkvagent-*.rpm "${ARTIFACTS_DIR}"
+cp "${ufm_build_dir}"/ufm-*.rpm "${ARTIFACTS_DIR}"
+cp "${ufm_broker_build_dir}"/ufmbroker-*.rpm "${ARTIFACTS_DIR}"
