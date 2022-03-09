@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -35,10 +35,35 @@ set -e
 
 # Set path variables
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+DSS_DIR=$(realpath "$SCRIPT_DIR/..")
 SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
+RPMBUILD_DIR="$HOME/rpmbuild"
+RPM_DIR="$RPMBUILD_DIR/RPMS"
+ANSIBLE_DIR="$DSS_DIR/dss-ansible"
+ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
 
-# Load GCC
-. "./$SCRIPT_DIR/load_gcc.sh"
+# Check for ARTIFACTS_DIR
+if [ ! -d "$ARTIFACTS_DIR" ]
+then
+    echo 'Artifacts dir not present.'
+    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
+    exit 1
+fi
 
-# Build aws-sdk-cpp
-rpmbuild -ba "$SPEC_FILE"
+# Check if aws-sdk-cpp RPM already built
+CHECK_AWS_RPM=$(find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' | wc -l)
+
+# Only build aws-sdk-cpp RPM if not already built
+if [ "$CHECK_AWS_RPM" == 0 ]
+then
+    # Load GCC
+    . "$SCRIPT_DIR/load_gcc.sh"
+
+    # Build aws-sdk-cpp
+    rpmbuild -ba "$SPEC_FILE"
+else
+    echo 'aws-sdk-cpp RPM already built. Skipping...'
+fi
+
+echo 'Copying aws-sdk-cpp RPM to dss-ansible artifacts directory...'
+find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;

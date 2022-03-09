@@ -29,22 +29,23 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Build Kernel for DSS runtime
+# Build mlnx-tools and mft for DSS runtime
 set -e
 
 # Set path variables
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-KERNEL_CONFIG="$SCRIPT_DIR/kernel_config"
-KERNEL_URL="https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.1.tar.gz"
-KERNEL_TGZ=$(basename $KERNEL_URL)
-KERNEL_NAME=$(basename $KERNEL_URL .tar.gz)
-KERNEL_STAGING_DIR="$HOME/workspace"
-KERNEL_DIR="$KERNEL_STAGING_DIR/$KERNEL_NAME"
-RPMBUILD_DIR="$HOME/rpmbuild"
-RPM_DIR="$RPMBUILD_DIR/RPMS"
 DSS_DIR=$(realpath "$SCRIPT_DIR/..")
 ANSIBLE_DIR="$DSS_DIR/dss-ansible"
 ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+RPMBUILD_DIR="$HOME/rpmbuild"
+RPM_DIR="$RPMBUILD_DIR/RPMS"
+
+# Set Mellanox variables
+MLNX_STAGING_DIR="$HOME/workspace"
+MFT_URL='https://content.mellanox.com/MFT/mft-4.17.0-106-x86_64-rpm.tgz'
+MLNX_TOOLS_URL='https://github.com/Mellanox/mlnx-tools'
+MLNX_TOOLS_NAME=$(basename "$MLNX_TOOLS_URL")
+MLNX_TOOLS_BRANCH='mlnx_ofed'
 
 # Check for ARTIFACTS_DIR
 if [ ! -d "$ARTIFACTS_DIR" ]
@@ -54,40 +55,47 @@ then
     exit 1
 fi
 
-# Create KERNEL_STAGING_DIR if it doesn't exist
-if [ ! -d "$KERNEL_STAGING_DIR" ]
+# Create GCC_STAGING_DIR if it doesn't exist
+if [ ! -d "$MLNX_STAGING_DIR" ]
 then
-    mkdir "$KERNEL_STAGING_DIR"
+    mkdir "$MLNX_STAGING_DIR"
 fi
 
-# Download kernel source tarball
-pushd "$KERNEL_STAGING_DIR"
-    if [ ! -d "$KERNEL_NAME" ]
-    then
-        curl "$KERNEL_URL" --output "$KERNEL_TGZ"
-        tar xvfz "./$KERNEL_TGZ"
-        rm -f "./$KERNEL_TGZ"
-    fi
-popd
-
-# Check if kernel RPMs already built
-CHECK_KERNEL_RPM=$(find "$RPM_DIR" -name 'kernel-*.rpm' | wc -l)
-
-# Only build kernel RPMs if not already built
-if [ "$CHECK_KERNEL_RPM" -lt 3 ]
+# Download mft to Mellanox staging directory if not present
+if [ ! -f "$MLNX_STAGING_DIR/$(basename $MFT_URL)" ]
 then
-    # Build kernel
-    pushd "$KERNEL_DIR"
-        # Copy kernel config file
-        cp "${KERNEL_CONFIG}" .config
-
-        # Make kernel RPMs
-        make clean
-        make "-j$(nproc)" rpm-pkg
+    pushd "$MLNX_STAGING_DIR"
+        curl -O "$MFT_URL"
     popd
 else
-    echo 'Kernel RPMs already built. Skipping...'
+    echo "mft RPM already downloaded. Skipping..."
 fi
 
-echo 'Copying kernel RPMs to Ansible artifacts...'
-find "$RPM_DIR" -name 'kernel-*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
+# Check if GCC RPM already built
+CHECK_MLNX_TOOLS_RPM=$(find "$RPM_DIR" -name 'mlnx-tools*.rpm' | wc -l)
+
+# Build mlnx-tools rpm if not present
+if [ "$CHECK_MLNX_TOOLS_RPM" == 0 ]
+then
+    # Build mlnx-tools
+    pushd "$MLNX_STAGING_DIR"
+        if [ ! -d "$MLNX_TOOLS_NAME" ]
+        then
+            git clone --single-branch --branch "$MLNX_TOOLS_BRANCH" "$MLNX_TOOLS_URL"
+        fi
+
+        pushd "$MLNX_TOOLS_NAME"
+            # Use python3 for CentOS 7 or newer - so resulting RPM works on both CentOS 7 and 8 (Stream)
+            sed -i "s/^\(%global RHEL8 0%{?rhel} >= \)7/\18/" mlnx-tools.spec
+            rpmbuild -ba mlnx-tools.spec
+        popd
+    popd
+else
+    echo "mlnx-tools RPM already built. Skipping..."
+fi
+
+echo 'Copying mft RPM to Ansible artifacts...'
+cp "$MLNX_STAGING_DIR/$(basename $MFT_URL)" "$ARTIFACTS_DIR"
+
+echo 'Copying mlnx-tools RPM to Ansible artifacts...'
+find "$RPM_DIR" -name 'mlnx-tools-*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;

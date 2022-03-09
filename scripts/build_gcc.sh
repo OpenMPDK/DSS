@@ -34,30 +34,60 @@ set -e
 
 # Set path variables
 GCC_REPO="https://github.com/BobSteagall/gcc-builder"
+GCC_REPONAME=$(basename "$GCC_REPO")
 GCC_BRANCH="gcc5"
 GCC_VERSION="5.1.0"
-GCC_DIR="$HOME/workspace"
+GCC_STAGING_DIR="$HOME/workspace"
+GCC_DIR="$GCC_STAGING_DIR/$GCC_REPONAME"
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+DSS_DIR=$(realpath "$SCRIPT_DIR/..")
+ANSIBLE_DIR="$DSS_DIR/dss-ansible"
+ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
 
-# Create GCC_DIR if it doesn't exist
-if [ ! -d "$GCC_DIR" ]
+# Check for ARTIFACTS_DIR
+if [ ! -d "$ARTIFACTS_DIR" ]
 then
-    mkdir "$GCC_DIR"
+    echo 'Artifacts dir not present.'
+    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
+    exit 1
+fi
+
+# Create GCC_STAGING_DIR if it doesn't exist
+if [ ! -d "$GCC_STAGING_DIR" ]
+then
+    mkdir "$GCC_STAGING_DIR"
 fi
 
 # Clone gcc-builder repo
-pushd "$GCC_DIR"
-    if [ ! -d "$(basename $GCC_REPO)" ]
+pushd "$GCC_STAGING_DIR"
+    if [ ! -d "$GCC_REPONAME" ]
     then
         git clone --single-branch --branch "$GCC_BRANCH" "$GCC_REPO"
     fi
 popd
 
-# Build GCC
-pushd "$GCC_DIR/$(basename "$GCC_REPO")"
-    sed -i "s/^export GCC_VERSION=5.X.0$/export GCC_VERSION=$GCC_VERSION/" gcc-build-vars.sh
-    sed -i "s/^export GCC_BUILD_THREADS_ARG='-j8'$/export GCC_BUILD_THREADS_ARG='-j$(nproc)'/" gcc-build-vars.sh
-    ./clean-gcc.sh
-    ./build-gcc.sh | tee build.log
-    ./stage-gcc.sh
-    ./make-gcc-rpm.sh -v
-popd
+# Check if GCC RPM already built
+CHECK_GCC_RPM=$(find "$GCC_DIR/packages" -name '*.rpm' | wc -l)
+
+# Only build GCC RPM if not already built
+if [ "$CHECK_GCC_RPM" == 0 ]
+then
+    # Build GCC
+    pushd "$GCC_DIR"
+        sed -i "s/^\(export GCC_VERSION=\)5.X.0$/\1$GCC_VERSION/" gcc-build-vars.sh
+        sed -i "s/^\(export GCC_BUILD_THREADS_ARG=\)'-j8'$/\1'-j$(nproc)'/" gcc-build-vars.sh
+        sed -i "s/KEWB Computing Build/Samsung R\&D/" gcc-build-vars.sh
+        sed -i "s/^\(export GCC_CUSTOM_BUILD_STR=\)kewb$/\1dss/" gcc-build-vars.sh
+        sed -i "s/^\(Name:       \)kewb-gcc/\1dss-gcc/" gcc.spec
+        sed -i "s/^\(Vendor:     \)KEWB Enterprises/\1Samsung R\&D/" gcc.spec
+        ./clean-gcc.sh
+        ./build-gcc.sh | tee build.log
+        ./stage-gcc.sh
+        ./make-gcc-rpm.sh -v
+    popd
+else
+    echo 'GCC RPM already built. Skipping...'
+fi
+
+echo 'Copying GCC RPM to Ansible artifacts...'
+find "$GCC_DIR/packages" -name '*.rpm' -exec cp {} "$ARTIFACTS_DIR" \;
