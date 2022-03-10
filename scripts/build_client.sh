@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -32,16 +32,18 @@
 
 set -e
 
-# Set path variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR=$(realpath "$SCRIPT_DIR/..")
-DSS_ECOSYSTEM_DIR="$DSS_DIR/dss-ecosystem"
-DSS_CLIENT_DIR="$DSS_ECOSYSTEM_DIR/dss_client"
-ANSIBLE_DIR="$DSS_DIR/dss-ansible"
-ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+. "$SCRIPT_DIR/utils.sh"
+
+# Check for submodules in update init recursive if missing
+checksubmodules
 
 # Build DSS Client Library
 "$DSS_CLIENT_DIR/build.sh"
 
-# Copy Client Library release tarball to dss-ansible Artifacts directory
-mv "$DSS_CLIENT_DIR"/dss_client-*.tgz "$ARTIFACTS_DIR"
+echo "Removing existing Client Library release tarball from dss-ansible artifacts directory"
+rm -f "${ARTIFACTS_DIR}"/dss_client-*.tgz
+
+echo "Copying Client Library release tarball to dss-ansible artifacts directory"
+cp "$MINIO_DIR"/dss_client-*.tgz "$ARTIFACTS_DIR"

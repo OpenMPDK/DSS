@@ -33,22 +33,15 @@
 # Build aws-sdk for DSS build / runtime
 set -e
 
-# Set path variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR=$(realpath "$SCRIPT_DIR/..")
-SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
-RPMBUILD_DIR="$HOME/rpmbuild"
-RPM_DIR="$RPMBUILD_DIR/RPMS"
-ANSIBLE_DIR="$DSS_DIR/dss-ansible"
-ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+. "$SCRIPT_DIR/utils.sh"
 
-# Check for ARTIFACTS_DIR
-if [ ! -d "$ARTIFACTS_DIR" ]
-then
-    echo 'Artifacts dir not present.'
-    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
-    exit 1
-fi
+# Set build variables
+AWS_SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
+
+# Check for submodules in update init recursive if missing
+checksubmodules
 
 # Check if aws-sdk-cpp RPM already built
 CHECK_AWS_RPM=$(find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' | wc -l)
@@ -60,7 +53,7 @@ then
     . "$SCRIPT_DIR/load_gcc.sh"
 
     # Build aws-sdk-cpp
-    rpmbuild -ba "$SPEC_FILE"
+    rpmbuild -ba "$AWS_SPEC_FILE"
 else
     echo 'aws-sdk-cpp RPM already built. Skipping...'
 fi

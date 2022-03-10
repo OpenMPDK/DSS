@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -32,36 +33,28 @@
 # Build Kernel for DSS runtime
 set -e
 
-# Set path variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+. "$SCRIPT_DIR/utils.sh"
+
+# Set build variables
 KERNEL_CONFIG="$SCRIPT_DIR/kernel_config"
 KERNEL_URL="https://mirrors.edge.kernel.org/pub/linux/kernel/v5.x/linux-5.1.tar.gz"
 KERNEL_TGZ=$(basename $KERNEL_URL)
 KERNEL_NAME=$(basename $KERNEL_URL .tar.gz)
-KERNEL_STAGING_DIR="$HOME/workspace"
-KERNEL_DIR="$KERNEL_STAGING_DIR/$KERNEL_NAME"
-RPMBUILD_DIR="$HOME/rpmbuild"
-RPM_DIR="$RPMBUILD_DIR/RPMS"
-DSS_DIR=$(realpath "$SCRIPT_DIR/..")
-ANSIBLE_DIR="$DSS_DIR/dss-ansible"
-ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+KERNEL_DIR="$BUILD_STAGING_DIR/$KERNEL_NAME"
 
-# Check for ARTIFACTS_DIR
-if [ ! -d "$ARTIFACTS_DIR" ]
-then
-    echo 'Artifacts dir not present.'
-    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
-    exit 1
-fi
+# Check for submodules in update init recursive if missing
+checksubmodules
 
-# Create KERNEL_STAGING_DIR if it doesn't exist
-if [ ! -d "$KERNEL_STAGING_DIR" ]
+# Create BUILD_STAGING_DIR if it doesn't exist
+if [ ! -d "$BUILD_STAGING_DIR" ]
 then
-    mkdir "$KERNEL_STAGING_DIR"
+    mkdir "$BUILD_STAGING_DIR"
 fi
 
 # Download kernel source tarball
-pushd "$KERNEL_STAGING_DIR"
+pushd "$BUILD_STAGING_DIR"
     if [ ! -d "$KERNEL_NAME" ]
     then
         curl "$KERNEL_URL" --output "$KERNEL_TGZ"

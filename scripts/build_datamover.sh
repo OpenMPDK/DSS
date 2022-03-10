@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -31,11 +32,12 @@
 
 set -e
 
-# Set path variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR="$SCRIPT_DIR/.."
-DATAMOVER_DIR="$DSS_DIR/nkv-datamover"
-ARTIFACTS_DIR="$DSS_DIR/../artifacts"
+. "$SCRIPT_DIR/utils.sh"
+
+# Check for submodules in update init recursive if missing
+checksubmodules
 
 echo "Creating artifacts directory..."
 mkdir -p "$ARTIFACTS_DIR"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -34,7 +34,8 @@
 set -e
 
 # Load utility functions
-. "./$SCRIPT_DIR/utils.sh"
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+. "$SCRIPT_DIR/utils.sh"
 
 # Minimum and Maximum GCC versions
 GCCMINVER=5.1.0

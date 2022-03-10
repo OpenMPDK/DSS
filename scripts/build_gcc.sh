@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -32,34 +33,28 @@
 # Build GCC for DSS build / runtime
 set -e
 
-# Set path variables
+# Load utility functions
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+. "$SCRIPT_DIR/utils.sh"
+
+# Set build variables
 GCC_REPO="https://github.com/BobSteagall/gcc-builder"
 GCC_REPONAME=$(basename "$GCC_REPO")
 GCC_BRANCH="gcc5"
 GCC_VERSION="5.1.0"
-GCC_STAGING_DIR="$HOME/workspace"
-GCC_DIR="$GCC_STAGING_DIR/$GCC_REPONAME"
-SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR=$(realpath "$SCRIPT_DIR/..")
-ANSIBLE_DIR="$DSS_DIR/dss-ansible"
-ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+GCC_DIR="$BUILD_STAGING_DIR/$GCC_REPONAME"
 
-# Check for ARTIFACTS_DIR
-if [ ! -d "$ARTIFACTS_DIR" ]
-then
-    echo 'Artifacts dir not present.'
-    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
-    exit 1
-fi
+# Check for submodules in update init recursive if missing
+checksubmodules
 
-# Create GCC_STAGING_DIR if it doesn't exist
-if [ ! -d "$GCC_STAGING_DIR" ]
+# Create BUILD_STAGING_DIR if it doesn't exist
+if [ ! -d "$BUILD_STAGING_DIR" ]
 then
-    mkdir "$GCC_STAGING_DIR"
+    mkdir "$BUILD_STAGING_DIR"
 fi
 
 # Clone gcc-builder repo
-pushd "$GCC_STAGING_DIR"
+pushd "$BUILD_STAGING_DIR"
     if [ ! -d "$GCC_REPONAME" ]
     then
         git clone --single-branch --branch "$GCC_BRANCH" "$GCC_REPO"

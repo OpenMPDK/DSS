@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -31,80 +32,18 @@
 
 set -e
 
-# Set path variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR="${SCRIPT_DIR}/../"
-ARTIFACTS_DIR="${DSS_DIR}/../artifacts"
-LIB_DIR="${DSS_DIR}/nkv-sdk/host_out/lib"
-INCLUDE_DIR="${DSS_DIR}/nkv-sdk/host/include"
+. "$SCRIPT_DIR/utils.sh"
 
-# Set go variables
-GOVER='1.12'
-GODIR="${SCRIPT_DIR}/../../go_${GOVER}"
-GOTGZ="go${GOVER}.linux-amd64.tar.gz"
-GOURL="https://dl.google.com/go/${GOTGZ}"
-GITHUBDIR='github.com/minio'
-MINIODIR='minio'
-MINIOURL="${SCRIPT_DIR}/../nkv-minio"
+# Check for submodules in update init recursive if missing
+checksubmodules
 
-# Set MinIO Client Variables
-MCURL="https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2019-10-09T22-54-57Z"
-S3BENCHPATH="${DSS_DIR}/nkv-s3benchmark/s3-benchmark"
+# Build MinIO
+"$MINIO_DIR/build.sh"
 
-# Create artifacts dirs
-mkdir -p "${ARTIFACTS_DIR}"
+echo "Removing existing MinIO release tarball from dss-ansible artifacts directory"
+rm -f "${ARTIFACTS_DIR}"/dss-minio-bin-*.tgz
 
-# Remove existing artifacts
-pushd "${ARTIFACTS_DIR}"
-    rm -f dss-minio-bin-*.tgz minio mc s3-benchmark
-popd
-
-echo 'Downloading build deps'
-export LD_LIBRARY_PATH="${LIB_DIR}"
-export CGO_CFLAGS="-std=gnu99 -I${INCLUDE_DIR}"
-export CGO_LDFLAGS="-L${LIB_DIR} -lnkvapi -lsmglog"
-
-echo 'Downloading go'
-if [ ! -d "${GODIR}" ]; then
-    mkdir "${GODIR}"
-    if [ ! -e "./${GOTGZ}" ]; then
-        wget "${GOURL}" --no-check-certificate
-    fi
-    tar xzf "${GOTGZ}" -C "${GODIR}" --strip-components 1
-    rm -f "${GOTGZ}"
-fi
-
-echo 'Checkout and build minio'
-pushd "${GODIR}/src"
-    mkdir -p "${GITHUBDIR}"
-
-    pushd "${GITHUBDIR}"
-        # Remove existing minio repo
-        rm -rf "${MINIODIR}"
-
-        # Build MinIO
-        git clone --progress "${MINIOURL}" "${MINIODIR}"
-        pushd "${MINIODIR}"
-            echo 'Building minio server'
-            "${GODIR}"/bin/go build
-            cp minio "${ARTIFACTS_DIR}"
-
-            # Get release string
-            git fetch --tags
-            RELEASESTRING=$(git describe --tags --exact-match || git rev-parse --short HEAD)
-        popd
-    popd
-popd
-
-pushd "${ARTIFACTS_DIR}"
-    # Download MinIO client binaries
-    wget -O mc "${MCURL}"
-    cp "${S3BENCHPATH}" .
-
-    # Set executable
-    chmod +x mc s3-benchmark
-
-    # Create release tarball
-    tar czvf "dss-minio-bin-${RELEASESTRING}.tgz" minio mc s3-benchmark
-    rm -f minio mc s3-benchmark
-popd
+echo "Copying MinIO release tarball to dss-ansible artifacts directory"
+cp "$MINIO_DIR"/dss-minio-bin-*.tgz "$ARTIFACTS_DIR"

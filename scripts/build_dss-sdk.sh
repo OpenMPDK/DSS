@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
 # The Clear BSD License
 #
 # Copyright (c) 2022 Samsung Electronics Co., Ltd.
@@ -33,23 +34,18 @@
 
 set -e
 
-# Set directory variables
+# Load utility functions
 SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-DSS_DIR=$(realpath "$SCRIPT_DIR/..")
-DSS_SDK_DIR="$DSS_DIR/dss-sdk"
-ANSIBLE_DIR="$DSS_DIR/dss-ansible"
-ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+. "$SCRIPT_DIR/utils.sh"
 
-# Check for ARTIFACTS_DIR
-if [ ! -d "$ARTIFACTS_DIR" ]
-then
-    echo 'Artifacts dir not present.'
-    echo 'Checkout DSS submodules first: git submodule update --init --recursive'
-    exit 1
-fi
+# Set build variables
+HOST_BUILD_MODE='kdd-samsung-remote'
 
-# Build nkv-sdk all w/ kdd-samsung-remote. Use local nkv-openmpdk repo for patch
-"$DSS_SDK_DIR/scripts/build_all.sh" kdd-samsung-remote
+# Check for submodules in update init recursive if missing
+checksubmodules
+
+# Build dss-sdk
+"$DSS_SDK_DIR/scripts/build_all.sh" "$HOST_BUILD_MODE"
 
 # Set artifacts build directory paths
 target_build_dir="${DSS_DIR}/nkv-sdk/df_out"
@@ -58,14 +54,14 @@ nkv_agent_build_dir="${DSS_DIR}/nkv-sdk/ufm/agents/nkv_agent"
 ufm_build_dir="${DSS_DIR}/nkv-sdk/ufm/fabricmanager"
 ufm_broker_build_dir="${DSS_DIR}/nkv-sdk/ufm/ufm_msg_broker"
 
-echo "Removing existing artifacts from artifacts directory"
+echo "Removing existing artifacts from artifacts directory..."
 rm -f "${ARTIFACTS_DIR}"/nkv-target-*.tgz
 rm -f "${ARTIFACTS_DIR}"/nkv-sdk-bin-*.tgz
 rm -f "${ARTIFACTS_DIR}"/nkvagent-*.rpm
 rm -f "${ARTIFACTS_DIR}"/ufm-*.rpm
 rm -f "${ARTIFACTS_DIR}"/ufmbroker-*.rpm
 
-echo "Copying artifacts to artifacts directory"
+echo "Copying artifacts to artifacts directory..."
 cp "${target_build_dir}"/nkv-target-*.tgz "${ARTIFACTS_DIR}"
 cp "${host_build_dir}"/nkv-sdk-bin-*.tgz "${ARTIFACTS_DIR}"
 cp "${nkv_agent_build_dir}"/nkvagent-*.rpm "${ARTIFACTS_DIR}"

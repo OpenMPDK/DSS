@@ -29,6 +29,51 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Set path vars used by all build scripts
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+DSS_DIR=$(realpath "$SCRIPT_DIR/..")
+export DSS_DIR
+export AWS_SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
+export RPMBUILD_DIR="$HOME/rpmbuild"
+export RPM_DIR="$RPMBUILD_DIR/RPMS"
+export ANSIBLE_DIR="$DSS_DIR/dss-ansible"
+export ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
+export DSS_ECOSYSTEM_DIR="$DSS_DIR/dss-ecosystem"
+export DSS_CLIENT_DIR="$DSS_ECOSYSTEM_DIR/dss_client"
+export DATAMOVER_DIR="$DSS_DIR/nkv-datamover"
+export DSS_SDK_DIR="$DSS_DIR/dss-sdk"
+export BUILD_STAGING_DIR="$HOME/workspace"
+export MINIO_DIR="$DSS_DIR/dss-minio"
+
+set -e
+
+# Check submodules for git init and checkout recursive if not
+checksubmodules()
+{
+    echo 'Checking submodules for init...'
+    SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+    DSS_DIR=$(realpath "$SCRIPT_DIR/..")
+
+    # Get list of repository paths from .gitmodules
+    mapfile -t REPOS < <(grep -oP "path = \K.+" "$DSS_DIR/.gitmodules")
+
+    # Fetch tags
+    for REPO in "${REPOS[@]}"
+    do
+        echo "Checking $REPO"
+        if [ ! -e "$DSS_DIR/$REPO/.git" ]
+        then
+            pushd "$DSS_DIR"
+                echo "$REPO not init"
+                git submodule update --init --recursive
+                break
+            popd
+        else
+            echo "$REPO already checked out."
+        fi
+    done
+}
+
 # Print a message to console and return non-zero
 die()
 {
