@@ -58,20 +58,27 @@ checksubmodules()
     mapfile -t REPOS < <(grep -oP "path = \K.+" "$DSS_DIR/.gitmodules")
 
     # Fetch tags
-    for REPO in "${REPOS[@]}"
-    do
-        echo "Checking $REPO"
-        if [ ! -e "$DSS_DIR/$REPO/.git" ]
-        then
-            pushd "$DSS_DIR"
-                echo "$REPO not init"
-                git submodule update --init --recursive
-                break
-            popd
-        else
-            echo "$REPO already checked out"
-        fi
-    done
+    if [ -n "${SUBMODULESPRESENT+x}" ]
+    then
+        for REPO in "${REPOS[@]}"
+        do
+            echo "Checking $REPO"
+            if [ ! -e "$DSS_DIR/$REPO/.git" ]
+            then
+                pushd "$DSS_DIR"
+                    echo "$REPO not init"
+                    git submodule update --init --recursive
+                    export SUBMODULESPRESENT=1
+                    break
+                popd
+            else
+                echo "$REPO already checked out"
+            fi
+        done
+        export SUBMODULESPRESENT=1
+    else
+        echo 'Submodules present'
+    fi
 }
 
 # Print a message to console and return non-zero
