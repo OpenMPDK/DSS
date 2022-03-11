@@ -40,7 +40,7 @@ export ANSIBLE_DIR="$DSS_DIR/dss-ansible"
 export ARTIFACTS_DIR="$ANSIBLE_DIR/artifacts"
 export DSS_ECOSYSTEM_DIR="$DSS_DIR/dss-ecosystem"
 export DSS_CLIENT_DIR="$DSS_ECOSYSTEM_DIR/dss_client"
-export DATAMOVER_DIR="$DSS_DIR/nkv-datamover"
+export DATAMOVER_DIR="$DSS_ECOSYSTEM_DIR/dss_datamover"
 export DSS_SDK_DIR="$DSS_DIR/dss-sdk"
 export BUILD_STAGING_DIR="$HOME/workspace"
 export MINIO_DIR="$DSS_DIR/dss-minio"
@@ -69,7 +69,7 @@ checksubmodules()
                 break
             popd
         else
-            echo "$REPO already checked out."
+            echo "$REPO already checked out"
         fi
     done
 }
