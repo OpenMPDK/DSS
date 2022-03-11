@@ -2,13 +2,17 @@
 
 Disaggregated Storage Software
 
-DSS build and runtime is supported on CentOS 7.8.
-
 ## What is DSS
 
-etc
+TBD
 
 ## Prerequisites
+
+### Operating system requirements
+
+DSS build and runtime is presently only supported on CentOS 7.8.
+
+### External dependencies
 
 * GCC 5.1.0
   * Install required yum packages to build GCC:
@@ -47,7 +51,7 @@ etc
   * Alternatively, use `https://github.com/torvalds/linux/releases/tag/v5.1` to manually build Kernel 5.1
     * Use custom .config file (`./scripts/kernel_config`)
 
-### DSS Build Dependencies - YUM modules
+### DSS build dependencies - YUM modules
 
 Install the following yum packages to build DSS:
 
@@ -64,7 +68,7 @@ sudo yum install bison boost-devel check cmake cmake3 \
   zlib-devel -y
 ```
 
-### DSS Build Dependencies - Python modules
+### DSS build dependencies - Python modules
 
 Install the following python modules to build DSS:
 
@@ -72,7 +76,7 @@ Install the following python modules to build DSS:
 sudo python3 -m pip install pybind11
 ```
 
-### DSS Build Dependencies - Ruby modules
+### DSS build dependencies - Ruby modules
 
 Install the following ruby modules to build DSS:
 
@@ -85,18 +89,34 @@ sudo gem install fpm
 
 ## Build DSS
 
-Use `git clone --recursive` to check out the DSS repo and all of its submodules.
+NOTE: GCC RPM must be installed on the build machine.
 
-Build each component in the order listed:
+To ensure successfull build, first build GCC install the resulting RPM, then run `build_all.sh` script:
 
-`./scripts/build_dss-sdk.sh`
+```bash
+./scripts/build_gcc.sh
+sudo yum install ./dss-ansible/artifacts/dss-gcc510-0.*.rpm -y
+./scripts/build_all.sh
+```
 
-`./scripts/build_minio.sh`
+Once GCC RPM is installed, only the `build_all.sh` needs to be run on subsequent builds.
 
-`./scripts/build_client.sh`
+### Optional: Build individual components
 
-`./scripts/build_datamover.sh`
+DSS Dependency build scripts:
+
+* Build GCC: `./scripts/build_gcc.sh`
+* Build aws-sdk-cpp: `./scripts/build_aws-sdk.sh`
+* Build kernel: `./scripts/build_kernel.sh`
+* Build mlnx-tools: `./scripts/build_mlnx-tools.sh`
+
+DSS individual components:
+
+* Build dss-sdk: `./scripts/build_dss-sdk.sh`
+* Build dss-minio: `./scripts/build_minio.sh`
+* Build dss-client: `./scripts/build_client.sh`
+* Build dss-datamover: `./scripts/build_datamover.sh`
 
 ## Deploy DSS
 
-See [dss-ansible README](./dss-ansible/README.md)
+See [dss-ansible README](https://github.com/OpenMPDK/dss-ansible/blob/master/README.md)
