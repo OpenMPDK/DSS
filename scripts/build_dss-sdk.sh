@@ -48,11 +48,11 @@ checksubmodules
 "$DSS_SDK_DIR/scripts/build_all.sh" "$HOST_BUILD_MODE"
 
 # Set artifacts build directory paths
-target_build_dir="${DSS_DIR}/nkv-sdk/df_out"
-host_build_dir="${DSS_DIR}/nkv-sdk/host_out"
-nkv_agent_build_dir="${DSS_DIR}/nkv-sdk/ufm/agents/nkv_agent"
-ufm_build_dir="${DSS_DIR}/nkv-sdk/ufm/fabricmanager"
-ufm_broker_build_dir="${DSS_DIR}/nkv-sdk/ufm/ufm_msg_broker"
+target_build_dir="${DSS_DIR}/dss-sdk/df_out"
+host_build_dir="${DSS_DIR}/dss-sdk/host_out"
+nkv_agent_build_dir="${DSS_DIR}/dss-sdk/ufm/agents/nkv_agent"
+ufm_build_dir="${DSS_DIR}/dss-sdk/ufm/fabricmanager"
+ufm_broker_build_dir="${DSS_DIR}/dss-sdk/ufm/ufm_msg_broker"
 
 echo "Removing existing artifacts from artifacts directory..."
 rm -f "${ARTIFACTS_DIR}"/nkv-target-*.tgz
