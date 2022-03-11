@@ -39,19 +39,15 @@ SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 # Check for submodules in update init recursive if missing
 checksubmodules
 
-echo "Creating artifacts directory..."
-mkdir -p "$ARTIFACTS_DIR"
-
 pushd "$DATAMOVER_DIR"
-    echo "Getting release string..."
+    echo "Getting release string from $(basename "$DATAMOVER_DIR") repo"
     git fetch --tags
     RELEASESTRING=$(git describe --tags --exact-match || git rev-parse --short HEAD)
+    echo "Release: $RELEASESTRING"
 popd
 
-pushd "$ARTIFACTS_DIR"
-    echo "Removing existing datamover tarball..."
-    rm -f nkv-datamover-*.tgz
+echo "Removing existing datamover tarball from dss-ansible artifacts directory"
+rm -f "$ARTIFACTS_DIR"/nkv-datamover-*.tgz
 
-    echo "Creating datamover tarball..."
-    git archive --format=tgz -19 --remote="$DATAMOVER_DIR" --output="./nkv-datamover-$RELEASESTRING.tgz" HEAD
-popd
+echo "Creating datamover tarball in dss-ansible artifacts directory"
+git archive --format=tgz -19 --remote="$DSS_ECOSYSTEM_DIR" --output="$ARTIFACTS_DIR/nkv-datamover-$RELEASESTRING.tgz" HEAD:"$(basename "$DATAMOVER_DIR")"
