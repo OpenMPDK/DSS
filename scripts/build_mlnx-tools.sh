@@ -76,6 +76,12 @@ then
             git clone --single-branch --branch "$MLNX_TOOLS_BRANCH" "$MLNX_TOOLS_URL"
         fi
 
+        # Create source tarball
+        TOOLSVERSION=$(grep -oP "Version: \K.+" "$MLNX_TOOLS_NAME"/mlnx-tools.spec)
+        SRCTAR="$MLNX_TOOLS_NAME-$TOOLSVERSION.tar.gz"
+        tar czvf "$SRCTAR" "$MLNX_TOOLS_NAME" --transform "s/$MLNX_TOOLS_NAME/$MLNX_TOOLS_NAME-$TOOLSVERSION/"
+        mv "$SRCTAR" "$RPMBUILD_DIR/SOURCES"
+
         pushd "$MLNX_TOOLS_NAME"
             # Use python3 for CentOS 7 or newer - so resulting RPM works on both CentOS 7 and 8 (Stream)
             sed -i "s/^\(%global RHEL8 0%{?rhel} >= \)7/\18/" mlnx-tools.spec
