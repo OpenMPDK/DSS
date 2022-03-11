@@ -41,7 +41,7 @@ SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 "$SCRIPT_DIR/build_gcc.sh"
 "$SCRIPT_DIR/build_aws-sdk.sh"
 "$SCRIPT_DIR/build_kernel.sh"
-"$SCRIPT_DIR/build_mlnx_tools.sh"
+"$SCRIPT_DIR/build_mlnx-tools.sh"
 
 # Build DSS
 "$SCRIPT_DIR/build_dss-sdk.sh"
