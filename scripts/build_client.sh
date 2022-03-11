@@ -40,10 +40,10 @@ SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 checksubmodules
 
 # Build DSS Client Library
-"$DSS_CLIENT_DIR/build.sh"
+"$DSS_CLIENT_DIR/scripts/build.sh"
 
 echo "Removing existing Client Library release tarball from dss-ansible artifacts directory"
 rm -f "${ARTIFACTS_DIR}"/dss_client-*.tgz
 
 echo "Copying Client Library release tarball to dss-ansible artifacts directory"
-cp "$MINIO_DIR"/dss_client-*.tgz "$ARTIFACTS_DIR"
+cp "$DSS_CLIENT_DIR"/dss_client-*.tgz "$ARTIFACTS_DIR"
