@@ -34,11 +34,15 @@ sudo gem install fpm
 
 ## Build DSS
 
-**NOTE: GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
+**NOTE: User-built GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
 
-On initial build, first build GCC and install the resulting RPM.
-Then build aws-sdk-cpp, and install the resulting RPM.
-Finally, run the `build_all.sh` script:
+On initial build:
+
+1. Build GCC
+2. Install the resulting GCC RPM
+3. Build AWS-SDK-CPP
+4. Install the resulting AWS-SDK-CPP RPM.
+5. Run the `build_all.sh` script
 
 ```bash
 ./scripts/build_gcc.sh
