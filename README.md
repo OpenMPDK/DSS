@@ -4,7 +4,7 @@ Disaggregated Storage Software
 
 ## What is DSS
 
-TBD
+Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
 
 ## Prerequisites
 
@@ -34,17 +34,23 @@ sudo gem install fpm
 
 ## Build DSS
 
-NOTE: GCC RPM must be installed on the build machine.
+**NOTE: GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
 
-On initial build, first build GCC, install the resulting RPM, then run `build_all.sh` script:
+On initial build, first build GCC and install the resulting RPM.
+Then build aws-sdk-cpp, and install the resulting RPM.
+Finally, run the `build_all.sh` script:
 
 ```bash
 ./scripts/build_gcc.sh
 sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y
+./scripts/builds_aws-sdk.sh
+sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-1.8.99-0.x86_64.rpm -y
 ./scripts/build_all.sh
 ```
 
-Once GCC RPM is installed, only the `build_all.sh` needs to be run on subsequent builds.
+Once the GCC and AWS RPMs are installed, only the `build_all.sh` script needs to be run on subsequent builds.
+
+Dependency artifacts for GCC, kernel, aws-sdk-cpp, and mlnx-tools are staged under `rpmbuilder` and `workspace` directories of your home directory by default. By leaving them in-place, re-build of these upstream components will be skipped on subsequent builds.
 
 ### Optional: Build individual components
 
