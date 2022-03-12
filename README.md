@@ -25,8 +25,10 @@ sudo yum install bc boost-devel check cmake cmake3 dejagnu dpkg elfutils-libelf-
   snappy-devel tbb-devel wget zlib-devel -y
 sudo python3 -m pip install pybind11
 sudo gem install ffi -v 1.12.2
-sudo gem install git -v 1.7.0
-sudo gem install rexml -v 3.2.4
+sudo gem install git -v 1.6.0
+sudo gem install rb-inotify -v 0.9.10
+sudo gem install rexml -v 3.2.3
+sudo gem install backports -v 3.21.0
 sudo gem install fpm
 ```
 
