@@ -76,7 +76,7 @@ then
         sed -i "s/^\(Name:       \)kewb-gcc/\1dss-gcc/" gcc.spec
         sed -i "s/^\(Vendor:     \)KEWB Enterprises/\1Samsung R\&D/" gcc.spec
         ./clean-gcc.sh
-        ./build-gcc.sh | tee build.log
+        ./build-gcc.sh -T | tee build.log
         ./stage-gcc.sh
         ./make-gcc-rpm.sh -v
     popd
