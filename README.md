@@ -1,6 +1,6 @@
 # DSS
 
-Disaggregated Storage Software
+Disaggregated Storage Solution
 
 ## What is DSS
 
