@@ -1,12 +1,12 @@
 [submodule "dss-ansible"]
 	path = dss-ansible
-	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-ansible.git
+	url = https://github.com/OpenMPDK/dss-ansible
 [submodule "dss-ecosystem"]
 	path = dss-ecosystem
-	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-ecosystem.git
+	url = https://github.com/OpenMPDK/dss-ecosystem
 [submodule "dss-minio"]
 	path = dss-minio
-	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-minio.git
+	url = https://github.com/OpenMPDK/dss-minio
 [submodule "dss-sdk"]
 	path = dss-sdk
-	url = git@msl-dc-gitlab.ssi.samsung.com:ssd/dss-sdk.git
+	url = https://github.com/OpenMPDK/dss-sdk
