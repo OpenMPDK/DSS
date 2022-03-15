@@ -47,7 +47,7 @@ On initial build:
 ```bash
 ./scripts/build_gcc.sh
 sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y
-./scripts/builds_aws-sdk.sh
+./scripts/build_aws-sdk.sh
 sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-1.8.99-0.x86_64.rpm -y
 ./scripts/build_all.sh
 ```
