@@ -42,7 +42,7 @@ checksubmodules
 pushd "$DATAMOVER_DIR"
     echo "Getting release string from $(basename "$DATAMOVER_DIR") repo"
     git fetch --tags
-    RELEASESTRING=$(git describe --tags --exact-match || git rev-parse --short HEAD)
+    RELEASESTRING=$(git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
     echo "Release: $RELEASESTRING"
 popd
 
