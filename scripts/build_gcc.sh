@@ -75,6 +75,8 @@ then
         sed -i "s/^\(export GCC_CUSTOM_BUILD_STR=\)kewb$/\1dss/" gcc-build-vars.sh
         sed -i "s/^\(Name:       \)kewb-gcc/\1dss-gcc/" gcc.spec
         sed -i "s/^\(Vendor:     \)KEWB Enterprises/\1Samsung R\&D/" gcc.spec
+        sed -i "s/build by KEWB/build by Samsung R\&D/" gcc.spec
+        sed -i "s/_build_name_fmt %%{NAME}-%%{RELEASE}/_build_name_fmt %%{NAME}-%%{VERSION}-%%{RELEASE}/" make-gcc-rpm.sh
         ./clean-gcc.sh
         ./build-gcc.sh -T | tee build.log
         ./stage-gcc.sh
