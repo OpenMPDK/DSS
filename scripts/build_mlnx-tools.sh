@@ -40,6 +40,7 @@ SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
 # Set build variables
 MLNX_STAGING_DIR="$HOME/workspace"
 MFT_URL='https://content.mellanox.com/MFT/mft-4.17.0-106-x86_64-rpm.tgz'
+MFT_FILENAME=$(basename $MFT_URL)
 MLNX_TOOLS_URL='https://github.com/Mellanox/mlnx-tools'
 MLNX_TOOLS_NAME=$(basename "$MLNX_TOOLS_URL")
 MLNX_TOOLS_BRANCH='mlnx_ofed'
@@ -54,13 +55,23 @@ then
 fi
 
 # Download mft to Mellanox staging directory if not present
-if [ ! -f "$MLNX_STAGING_DIR/$(basename $MFT_URL)" ]
+if [ ! -f "$MLNX_STAGING_DIR/$MFT_FILENAME" ]
 then
     pushd "$MLNX_STAGING_DIR"
         curl -O "$MFT_URL"
     popd
 else
     echo "mft RPM already downloaded. Skipping..."
+fi
+
+# Extract mft if not present
+if [ ! -f "$MLNX_STAGING_DIR/${MFT_FILENAME%.*}" ]
+then
+    pushd "$MLNX_STAGING_DIR"
+        tar xvfz "$MFT_FILENAME"
+    popd
+else
+    echo "mft RPM already extracted. Skipping..."
 fi
 
 # Check if GCC RPM already built
@@ -93,7 +104,7 @@ else
 fi
 
 echo 'Copying mft RPM to Ansible artifacts...'
-cp "$MLNX_STAGING_DIR/$(basename $MFT_URL)" "$ARTIFACTS_DIR"
+find "$MLNX_STAGING_DIR/${MFT_FILENAME%.*}" -name "${MFT_FILENAME%-x86_64-rpm.*}*.rpm" -exec cp {} "$ARTIFACTS_DIR/" \;
 
 echo 'Copying mlnx-tools RPM to Ansible artifacts...'
 find "$RPM_DIR" -name 'mlnx-tools-*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
