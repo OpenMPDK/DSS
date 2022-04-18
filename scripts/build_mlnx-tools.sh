@@ -95,7 +95,7 @@ then
 
         pushd "$MLNX_TOOLS_NAME"
             # Use python3 for CentOS 7 or newer - so resulting RPM works on both CentOS 7 and 8 (Stream)
-            sed -i "s/^\(%global RHEL8 0%{?rhel} >= \)7/\18/" mlnx-tools.spec
+            sed -i "s/^\(%global RHEL8 0%{?rhel} >= \)8/\17/" mlnx-tools.spec
             rpmbuild -ba mlnx-tools.spec
         popd
     popd
