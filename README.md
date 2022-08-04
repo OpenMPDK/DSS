@@ -8,7 +8,7 @@ Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, 
 
 [![How to build, deploy, and use DSS software](https://img.youtube.com/vi/fpAFvLhTpqw/0.jpg)](https://youtu.be/fpAFvLhTpqw "How to build, deploy, and use DSS software")
 
-[How to build, deploy, and use DSS software](https://youtu.be/Whx9V0NNGkA)
+[How to build, deploy, and use DSS software](https://youtu.be/fpAFvLhTpqw)
 
 ## Prerequisites
 
