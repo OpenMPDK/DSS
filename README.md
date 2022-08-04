@@ -6,7 +6,7 @@ Disaggregated Storage Solution
 
 Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
 
-[![How to build, deploy, and use DSS software](https://img.youtube.com/vi/Whx9V0NNGkA/0.jpg)](https://youtu.be/Whx9V0NNGkA "How to build, deploy, and use DSS software")
+[![How to build, deploy, and use DSS software](https://img.youtube.com/vi/fpAFvLhTpqw/0.jpg)](https://youtu.be/fpAFvLhTpqw "How to build, deploy, and use DSS software")
 
 [How to build, deploy, and use DSS software](https://youtu.be/Whx9V0NNGkA)
 
