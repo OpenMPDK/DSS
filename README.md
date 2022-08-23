@@ -18,7 +18,7 @@ DSS build and runtime is presently supported on CentOS 7.8.
 
 ### Build package dependencies
 
-Install the folling packages / modules to build DSS and its external dependencies:
+Install the following packages / modules to build DSS and its external dependencies:
 
 ```bash
 sudo yum install epel-release -y
