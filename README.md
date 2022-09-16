@@ -79,3 +79,9 @@ DSS individual components:
 ## Deploy DSS
 
 See [dss-ansible README](https://github.com/OpenMPDK/dss-ansible/blob/master/README.md)
+
+## Blogs and Papers
+
+[DSS: High I/O Bandwidth Disaggregated Object Storage System for AI Applications](https://www.researchgate.net/publication/358580692_DSS_High_IO_Bandwidth_Disaggregated_Object_Storage_System_for_AI_Applications)
+
+[High-Capacity SSDs for AI/ML using Disaggregated Storage Solution: Performance Test Results Show Promise](https://semiconductor.samsung.com/us/newsroom/tech-blog/high-capacity-ssds-for-ai-ml-using-disaggregated-storage-solution-performance-test-results-show-promise/)
