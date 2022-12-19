@@ -5,6 +5,8 @@ on:
       - master
   pull_request_target:
     types: [opened, synchronize, reopened]
+    branches:
+      - master
 env:
   GH_PR_NUMBER: ${{ github.event.pull_request.number }}
 jobs:
