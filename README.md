@@ -23,8 +23,8 @@ Install the following packages / modules to build DSS and its external dependenc
 ```bash
 sudo yum install epel-release -y
 sudo yum group install "Development Tools" -y
-sudo yum install bc boost-devel check cmake cmake3 dejagnu dpkg elfutils-libelf-devel expect glibc-devel \
-  jemalloc-devel Judy-devel libaio-devel libcurl-devel libuuid-devel meson ncurses-devel numactl-devel \
+sudo yum install bc boost-devel check cmake cmake3 CUnit-devel dejagnu dpkg elfutils-libelf-devel expect \
+  glibc-devel jemalloc-devel Judy-devel libaio-devel libcurl-devel libuuid-devel meson ncurses-devel numactl-devel \
   openssl-devel pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb ruby-devel \
   snappy-devel tbb-devel wget zlib-devel -y
 sudo python3 -m pip install pybind11
@@ -75,6 +75,27 @@ DSS individual components:
 * Build dss-minio: `./scripts/build_minio.sh`
 * Build dss-client: `./scripts/build_client.sh`
 * Build dss-datamover: `./scripts/build_datamover.sh`
+
+## Build Docker
+
+DSS can alternatively be build in a Docker container.
+
+To build the Docker image:
+
+```bash
+./scripts/build_gcc.sh
+./scripts/build_aws-sdk.sh
+docker build -t dss-build -f scripts/Dockerfile .
+```
+
+To build DSS from Docker:
+
+```bash
+docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_dss-sdk.sh
+docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_minio.sh
+docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_client.sh
+docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_datamover.sh
+```
 
 ## Deploy DSS
 
