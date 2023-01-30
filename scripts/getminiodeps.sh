@@ -38,4 +38,3 @@ aws s3 cp "$DSSMAINS3URI/$DSSSDKARTIFACT" - | tar xfz - --directory=../dss-sdk/h
 echo "Staging s3-benchmark from URL: $S3BENCHURL"
 curl --silent --show-error --create-dirs --output "../$S3BENCHPATH" --location --remote-name "$S3BENCHURL"
 chmod +x "../$S3BENCHPATH"
-

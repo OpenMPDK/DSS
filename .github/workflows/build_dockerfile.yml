@@ -26,7 +26,7 @@ jobs:
             for item in $FILE_NAMES
             do
               echo $item
-              if [ "$file" == "$item" ]; then
+              if [ "$file" == *"$item" ]; then
                 echo "File is in the list"
                 exit
               fi
