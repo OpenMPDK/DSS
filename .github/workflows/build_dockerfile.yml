@@ -1,0 +1,34 @@
+name: Fetch the updated files & Trigger the build.
+on:
+  push:
+    branches:
+      - develop
+env:
+  FILE_NAMES: "Dockerfile stagemainartifacts.sh getminiodeps.sh build_gcc.sh build_aws-sdk.sh aws-sdk-cpp.spec"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # windows-latest | macos-latest
+    name: Fetch the updated files & Trigger the build.
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+            for item in $FILE_NAMES
+            do
+              echo $item
+              if [ "$file" == "$item" ]; then
+                echo "File is in the list"
+                exit
+              fi
+            done
+          done
