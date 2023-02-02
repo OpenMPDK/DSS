@@ -1,44 +1,64 @@
-name: Fetch the updated files & Trigger the build.
+name: Fetch Updated Files & Trigger CodeBuild.
 on:
   push:
     branches:
       - develop
 env:
-  FILE_NAMES: "Dockerfile stagemainartifacts.sh getminiodeps.sh build_gcc.sh build_aws-sdk.sh aws-sdk-cpp.spec"
+  FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh"
 
 jobs:
   build:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Fetch the updated files & Trigger the build.
+    name: Test changed-files
     steps:
-      # - uses: actions/checkout@v3
-      #   with:
-      #     fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
 
-      # - name: Get changed files
-      #   id: changed-files
-      #   uses: tj-actions/changed-files@v35
-
-      # - name: List all changed files
-      #   run: |
-      #     for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-      #       echo "$file was changed"
-      #       for item in $FILE_NAMES
-      #       do
-      #         echo $item
-      #         if [ "$file" == *"$item" ]; then
-      #           echo "File is in the list"
-      #           exit
-      #         fi
-      #       done
-      #     done
+      - name: Set Changed Files into a variable
+        run: |
+          echo "CHANGED_FILES_IN_COMMIT=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_ENV
+      - name: Create and Enviornment Varaible For Storing the Trigger CodeBuild Value
+        run:
+          echo "{name}={value}" >> $GITHUB_ENV
+      - name: Inline Python Script
+        run:  |
+          import os
+          print(f"File name to check are {os.environ.get('FILE_NAMES')}")
+          print(f"Changed Files in a commit are {os.environ.get('CHANGED_FILES_IN_COMMIT')}")
+          files_to_check = os.environ.get('FILE_NAMES').split(" ")
+          files_changed_in_commit = os.environ.get('CHANGED_FILES_IN_COMMIT').split(" ")
+          files_changed_in_commit = [files.split("/")[-1] for files in files_changed_in_commit]
+          print(f"Files to check are {files_to_check} & Files updated in the commit are {files_changed_in_commit}")
+          matched_files = set(files_to_check) & set(files_changed_in_commit)
+          print(f"Matched Files are: {matched_files}")
+          env_file = os.getenv('GITHUB_ENV')
+          with open(env_file, "a") as myfile:
+            if matched_files:
+              myfile.write("TRIGGER_CODEBUILD=True")
+            else:
+              myfile.write("TRIGGER_CODEBUILD=False")
+          print("Done")
+        shell: python
+      - name: Read Env Variable
+        run:  |
+          echo ${{ env.TRIGGER_CODEBUILD }}
       - name: Configure AWS Credentials
+        if: env.TRIGGER_CODEBUILD == 'True'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
-      - name: Build DSS on CodeBuild
+      - name: Build DSS On Code Build
+        if: env.TRIGGER_CODEBUILD == 'True'
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
           project-name: DSS
+      - name: Run this if no files Matched in Commit
+        if: env.TRIGGER_CODEBUILD == 'False'
+        run:
+          echo "Code Build is not triggered as no matching files matched in the commit."
