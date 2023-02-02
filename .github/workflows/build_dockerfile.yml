@@ -36,11 +36,11 @@ jobs:
           matched_files = set(files_to_check) & set(files_changed_in_commit)
           print(f"Matched Files are: {matched_files}")
           env_file = os.getenv('GITHUB_ENV')
-          with open(env_file, "a") as myfile:
+          with open(env_file, "a") as file:
             if matched_files:
-              myfile.write("TRIGGER_CODEBUILD=True")
+              file.write("TRIGGER_CODEBUILD=True")
             else:
-              myfile.write("TRIGGER_CODEBUILD=False")
+              file.write("TRIGGER_CODEBUILD=False")
           print("Done")
         shell: python
       - name: Read Env Variable
