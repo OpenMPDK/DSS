@@ -60,3 +60,4 @@ fi
 
 echo 'Copying aws-sdk-cpp RPM to dss-ansible artifacts directory...'
 find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
+
