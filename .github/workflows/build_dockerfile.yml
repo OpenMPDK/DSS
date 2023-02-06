@@ -84,7 +84,7 @@ jobs:
       - name: Run this if no files Matched in Commit
         if: env.TRIGGER_CODEBUILD == 'False'
         run:
-          echo "Code Build is not triggered as no matching files matched in the commit."
+          echo "Code Build is not triggered as no matching files found in the commit."
 
   archive_files_to_main_if_merged:
     if: github.event.pull_request.merged == true
