@@ -88,3 +88,4 @@ fi
 
 echo 'Copying GCC RPM to Ansible artifacts...'
 find "$GCC_DIR/packages" -name '*.rpm' -exec cp {} "$ARTIFACTS_DIR" \;
+
