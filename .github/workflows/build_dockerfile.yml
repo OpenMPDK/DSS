@@ -7,9 +7,9 @@ env:
   FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh"
 
 jobs:
-  build:
+  check_files_trigger_codebuild:
     runs-on: ubuntu-latest  # windows-latest | macos-latest
-    name: Test changed-files
+    name: check_files_trigger_codebuild
     steps:
       - uses: actions/checkout@v3
         with:
@@ -17,7 +17,6 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v35
-
       - name: Set Changed Files into a variable
         run: |
           echo "CHANGED_FILES_IN_COMMIT=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_ENV
@@ -27,6 +26,8 @@ jobs:
       - name: Inline Python Script
         run:  |
           import os
+          RUN_SCRIPT = ""
+          scipts_file_check = ['build_aws-sdk.sh', 'build_gcc.sh']
           print(f"File name to check are {os.environ.get('FILE_NAMES')}")
           print(f"Changed Files in a commit are {os.environ.get('CHANGED_FILES_IN_COMMIT')}")
           files_to_check = os.environ.get('FILE_NAMES').split(" ")
@@ -38,14 +39,26 @@ jobs:
           env_file = os.getenv('GITHUB_ENV')
           with open(env_file, "a") as file:
             if matched_files:
-              file.write("TRIGGER_CODEBUILD=True")
+              file.write("TRIGGER_CODEBUILD=True\n")
+              if len(set(scipts_file_check) & set(files_changed_in_commit)) == 2:
+                RUN_SCRIPT = "ALL"
+                file.write("RUN_SCRIPT=ALL")
+              elif len(set(scipts_file_check) & set(files_changed_in_commit)) == 1:
+                RUN_SCRIPT = list(set(scipts_file_check) & set(files_changed_in_commit))[0]
+                RUN_SCRIPT = f"RUN_SCRIPT={RUN_SCRIPT}"
+                file.write(RUN_SCRIPT)
+              elif len(set(scipts_file_check) & set(files_changed_in_commit)) == 0:
+                RUN_SCRIPT = "None"
+                file.write("RUN_SCRIPT=None") 
             else:
               file.write("TRIGGER_CODEBUILD=False")
+          print(RUN_SCRIPT)
           print("Done")
         shell: python
       - name: Read Env Variable
         run:  |
           echo ${{ env.TRIGGER_CODEBUILD }}
+          echo ${{ env.RUN_SCRIPT }}
       - name: Configure AWS Credentials
         if: env.TRIGGER_CODEBUILD == 'True'
         uses: aws-actions/configure-aws-credentials@v1
@@ -58,6 +71,10 @@ jobs:
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
           project-name: DSS
+          env-vars-for-codebuild: |
+            RUN_SCRIPT
+        env:
+          RUN_SCRIPT: ${{ env.RUN_SCRIPT }}
       - name: Run this if no files Matched in Commit
         if: env.TRIGGER_CODEBUILD == 'False'
         run:
