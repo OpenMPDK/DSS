@@ -26,9 +26,6 @@ jobs:
       - name: Set Changed Files into a variable
         run: |
           echo "CHANGED_FILES_IN_COMMIT=${{ steps.changed-files.outputs.all_changed_files }}" >> $GITHUB_ENV
-      - name: Create and Enviornment Varaible For Storing the Trigger CodeBuild Value
-        run:
-          echo "{name}={value}" >> $GITHUB_ENV
       - name: Inline Python Script
         run:  |
           import os
@@ -58,8 +55,6 @@ jobs:
                 file.write("RUN_SCRIPT=None") 
             else:
               file.write("TRIGGER_CODEBUILD=False")
-          print(RUN_SCRIPT)
-          print("Done")
         shell: python
       - name: Read Env Variable
         run:  |
