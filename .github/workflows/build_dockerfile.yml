@@ -1,19 +1,20 @@
 name: Fetch Updated Files & Trigger CodeBuild.
 on:
-  push:
-    branches:
-      - develop
+  # push:
+  #   branches:
+  #     - develop
   pull_request:
     branches:
       - merge_test
     types:
       - closed
+      - opened
 env:
   FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh"
 
 jobs:
   check_files_trigger_codebuild:
-    if: github.event_name == 'push'
+    if: github.event.action == 'opened'
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: check_files_trigger_codebuild
     steps:
