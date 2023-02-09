@@ -1,8 +1,8 @@
 name: Fetch Updated Files & Trigger CodeBuild.
 on:
-  # push:
-  #   branches:
-  #     - develop
+  push:
+    branches:
+      - develop
   pull_request:
     branches:
       - merge_test
@@ -10,7 +10,7 @@ on:
       - closed
       - opened
 env:
-  FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh"
+  FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh trigger_build_scripts.sh"
 
 jobs:
   check_files_trigger_codebuild:
