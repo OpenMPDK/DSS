@@ -4,8 +4,6 @@
 #This Script reads the $RUN_SCRIPT variable sent via the Github workflow and runs the build_gcc.sh or build_aws-sdk.sh
 #It also tries to use the latest artifacts from S3 if there is no change in the build_gcc.sh or build_aws-sdk.sh
 
-set -e
-
 if [[ $RUN_SCRIPT == "build_gcc.sh" ]]
 then
     echo "Only Run build_gcc.sh and download the latest files of the aws sdk rpm"
