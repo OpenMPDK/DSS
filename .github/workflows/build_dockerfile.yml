@@ -1,20 +1,19 @@
 name: Fetch Updated Files & Trigger CodeBuild.
 on:
-  # push:
-  #   branches:
-  #     - develop
   pull_request:
     branches:
-      - merge_test
+      - master
+      - stable/*
     types:
       - closed
       - opened
+      - synchronize
 env:
   FILE_NAMES: "Dockerfile aws-sdk-cpp.spec build_aws-sdk.sh build_gcc.sh getminiodeps.sh stagemainartifacts.sh trigger_build_scripts.sh"
 
 jobs:
   check_files_trigger_codebuild:
-    if: github.event.action == 'opened'
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest  # windows-latest | macos-latest
     name: check_files_trigger_codebuild
     steps:
@@ -68,11 +67,26 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-1
-      - name: Build DSS On Code Build
-        if: env.TRIGGER_CODEBUILD == 'True'
+      - name: Build DSS On Code Build in Case Base PR to Stable
+        if: env.TRIGGER_CODEBUILD == 'True' && startsWith(github.base_ref, 'stable')
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
           project-name: DSS
+          compute-type-override: BUILD_GENERAL1_MEDIUM
+          buildspec-override: ./buildspec/build-docker-image-ecr.yml
+          # image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ github.base_ref }}"
+          env-vars-for-codebuild: |
+            RUN_SCRIPT
+        env:
+          RUN_SCRIPT: ${{ env.RUN_SCRIPT }}
+      - name: Build DSS On Code Build in Case Base PR to Master
+        if: env.TRIGGER_CODEBUILD == 'True' && startsWith(github.base_ref, 'master')
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: DSS
+          compute-type-override: BUILD_GENERAL1_MEDIUM
+          buildspec-override: ./buildspec/build-docker-image-ecr.yml
+          # image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ github.base_ref }}"
           env-vars-for-codebuild: |
             RUN_SCRIPT
         env:
