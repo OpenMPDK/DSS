@@ -26,7 +26,7 @@ pushd ${AWS_DIR}
 patch -p1 < ${SCRIPT_DIR}/aws-git-${GIT_AWS_RELEASE}.patch
 
 # Compiling the code
-source /opt/rh/devtoolset-8/enable
+source /opt/rh/devtoolset-11/enable
 cd crt/aws-crt-cpp
 cmake3 . -DBUILD_SHARED_LIBS=ON -DCPP_STANDARD=17 -DAUTORUN_UNIT_TESTS=OFF -DENABLE_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DBYO_CRYPTO=ON -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} && make -j $(nproc) install
 cd ../..
