@@ -71,7 +71,7 @@ jobs:
         if: env.TRIGGER_CODEBUILD == 'True' && startsWith(github.base_ref, 'stable')
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: DSS
+          project-name: OpenMPDK_DSS
           compute-type-override: BUILD_GENERAL1_MEDIUM
           buildspec-override: ./buildspec/build-docker-image-ecr.yml
           # image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ github.base_ref }}"
@@ -83,7 +83,7 @@ jobs:
         if: env.TRIGGER_CODEBUILD == 'True' && startsWith(github.base_ref, 'master')
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: DSS
+          project-name: OpenMPDK_DSS
           compute-type-override: BUILD_GENERAL1_MEDIUM
           buildspec-override: ./buildspec/build-docker-image-ecr.yml
           # image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ github.base_ref }}"
