@@ -16,6 +16,11 @@ phases:
       - docker tag dss:dss $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/dss:dss
   post_build:
     commands:
-      - aws s3 cp --recursive dss-ansible/artifacts/ s3://$BUCKET_NAME/builds/DSS/$CODEBUILD_BUILD_NUMBER/ --exclude "*" --include "*.rpm"
+      - aws s3 cp --recursive dss-ansible/artifacts/ s3://$BUCKET_NAME/$DSS_S3_BUILDS_PREFIX/$CODEBUILD_BUILD_NUMBER/ --exclude "*" --include "*.rpm"
       - echo "Pushing the Docker image..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/dss:dss
+      - |
+        for key in $(aws s3api list-objects --bucket $BUCKET_NAME --prefix $DSS_S3_BUILDS_PREFIX/$CODEBUILD_BUILD_NUMBER/ --query 'Contents[].{Key: Key}' --output text); do
+          echo "https://dss-artifacts.s3.us-west-1.amazonaws.com/$key" >> artifacts_file.txt
+        done
+      - cat artifacts_file.txt
