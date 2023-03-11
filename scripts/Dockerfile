@@ -4,7 +4,7 @@ COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
 	&& yum install -y \
-        epel-release && \
+        epel-release centos-release-scl-rh && \
     yum group install -y \
         "Development Tools" && \
     yum install -y \
@@ -15,6 +15,7 @@ RUN set -eux \
         cmake3 \
         CUnit-devel \
         dejagnu \
+        devtoolset-11 \
         dpkg \
         elfutils-libelf-devel \
         expect \
