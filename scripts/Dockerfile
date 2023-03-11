@@ -1,5 +1,7 @@
 FROM centos:centos7.8.2003
 
+COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
+COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
 	&& yum install -y \
         epel-release centos-release-scl-rh && \
@@ -37,7 +39,9 @@ RUN set -eux \
         snappy-devel \
         tbb-devel \
         wget \
-        zlib-devel && \
+        zlib-devel \
+        /dss-gcc510*.rpm \
+        /aws-sdk-cpp*.rpm && \
     rm -f ./*.rpm && \
     yum clean all && \
     rm -rf /var/cache/yum && \
@@ -71,15 +75,6 @@ RUN set -eux \
     rm -rf ./aws
 ENV GEM_HOME="/root/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.7.0.2747-linux/bin"
-COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
-COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
-RUN set -eux \
-	&& yum install -y \
-        /dss-gcc510*.rpm \
-        /aws-sdk-cpp*.rpm && \
-    rm -f ./*.rpm && \
-    yum clean all && \
-    rm -rf /var/cache/yum && \
 COPY scripts/stagemainartifacts.sh /
 COPY scripts/getminiodeps.sh /
 WORKDIR /DSS
