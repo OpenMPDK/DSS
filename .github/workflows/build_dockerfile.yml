@@ -74,7 +74,7 @@ jobs:
           ECR_IMAGE_NAME=${{ github.base_ref }}
           ECR_IMAGE_NAME=$(echo $ECR_IMAGE_NAME | tr '/' '_')
           echo "ECR_IMAGE_NAME=$ECR_IMAGE_NAME" >> $GITHUB_OUTPUT
-      - name: Build DSS On Code Build in Case Base PR to Stable
+      - name: Build DSS on code build in case base PR is for Stable or Master Branches
         if: env.TRIGGER_CODEBUILD == 'True' && (startsWith(github.base_ref, 'stable') || startsWith(github.base_ref, 'master'))
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
@@ -82,18 +82,6 @@ jobs:
           compute-type-override: BUILD_GENERAL1_MEDIUM
           buildspec-override: ./buildspec/build-docker-image-ecr.yml
           image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:dss-build_${{ steps.ecr_image_name.outputs.ECR_IMAGE_NAME }}"
-          env-vars-for-codebuild: |
-            RUN_SCRIPT
-        env:
-          RUN_SCRIPT: ${{ env.RUN_SCRIPT }}
-      - name: Build DSS On Code Build in Case Base PR to Master
-        if: env.TRIGGER_CODEBUILD == 'True' && startsWith(github.base_ref, 'master')
-        uses: aws-actions/aws-codebuild-run-build@v1
-        with:
-          project-name: OpenMPDK_DSS
-          compute-type-override: BUILD_GENERAL1_MEDIUM
-          buildspec-override: ./buildspec/build-docker-image-ecr.yml
-          # image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ github.base_ref }}"
           env-vars-for-codebuild: |
             RUN_SCRIPT
         env:
