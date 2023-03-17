@@ -2,7 +2,7 @@
 set -e
 
 DIR="$PWD/$(dirname "$0")"
-. "${DIR}/utils.sh"
+source "${DIR}/utils.sh"
 
 GIT_AWS_RELEASE=1.9
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
@@ -15,7 +15,7 @@ AWS_SDK_RPM_LOG="aws-sdk-cpp-rpmbuild.log"
 rpm -q aws-sdk-cpp &>/dev/null &&  rpm -e aws-sdk-cpp
 
 # Create spec file for RPM build
-cat > ${AWS_SPEC_FILE} << EOF
+cat > "${AWS_SPEC_FILE}" << EOF
 Name:           aws-sdk-cpp
 Version:        ${GIT_AWS_RELEASE}
 Release:        0
@@ -61,8 +61,8 @@ EOF
 
 # Build AWS RPM
 echo -n "Building AWS RPM ...."
-rpmbuild -bb ${AWS_SPEC_FILE}  &> "$AWS_SDK_RPM_LOG"
-if [ $? -ne 0 ]; then
+if ! rpmbuild -bb "$AWS_SPEC_FILE"  &> "$AWS_SDK_RPM_LOG";
+then
 	echo "[Failed]" 
 	exit 1
 fi
