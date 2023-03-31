@@ -55,6 +55,8 @@ RUN set -eux \
     chmod -R 0777 /var/lib/rpm/ && \
     mkdir /var/cache/yum && \
     chmod 0777 /var/cache/yum && \
+    mkdir /.cache && \
+    chmod 0777 /.cache && \
     python3 -m pip install pybind11 && \
     gem install --no-ri --no-rdoc --conservative --user-install --minimal-deps \
         dotenv:2.7.6 \
