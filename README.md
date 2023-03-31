@@ -80,7 +80,11 @@ DSS individual components:
 
 DSS can alternatively be built via Docker.
 
-To build DSS dependencies via Docker:
+```bash
+./scripts/docker/build_all.sh
+```
+
+To build individual DSS dependencies via Docker:
 
 ```bash
 ./scripts/docker/build_gcc.sh
@@ -89,7 +93,7 @@ To build DSS dependencies via Docker:
 ./scripts/docker/build_mlnx-tools.sh
 ```
 
-To build DSS from Docker:
+To build individual DSS components from Docker:
 
 ```bash
 ./scripts/docker/build_dss-sdk.sh
