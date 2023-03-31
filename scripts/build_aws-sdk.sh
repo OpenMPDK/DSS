@@ -1,12 +1,12 @@
 #!/usr/bin/bash
 set -e
 
-DIR="$PWD/$(dirname $0)"
+DIR=$PWD/$(dirname $0)
 GIT_AWS_RELEASE=1.9
 AWS_SPEC_FILE="aws-${GIT_AWS_RELEASE}.spec"
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
 
-cp "$DIR/aws-git-${GIT_AWS_RELEASE}.patch" $HOME/rpmbuild/SOURCES/
+cp $DIR/aws-git-${GIT_AWS_RELEASE}.patch $HOME/rpmbuild/SOURCES/
 
 
 # Create spec file for RPM build
