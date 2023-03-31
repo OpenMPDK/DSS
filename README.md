@@ -73,28 +73,29 @@ DSS individual components:
 
 * Build dss-sdk: `./scripts/build_dss-sdk.sh`
 * Build dss-minio: `./scripts/build_minio.sh`
-* Build dss-client: `./scripts/build_client.sh`
+* Build dss-client: `./scripts/build_dss-client.sh`
 * Build dss-datamover: `./scripts/build_datamover.sh`
 
 ## Build Docker
 
-DSS can alternatively be build in a Docker container.
+DSS can alternatively be built via Docker.
 
-To build the Docker image:
+To build DSS dependencies via Docker:
 
 ```bash
-./scripts/build_gcc.sh
-./scripts/build_aws-sdk.sh
-docker build -t dss-build -f scripts/Dockerfile .
+./scripts/docker/build_gcc.sh
+./scripts/docker/build_aws-sdk.sh
+./scripts/docker/build_kernel.sh
+./scripts/docker/build_mlnx-tools.sh
 ```
 
 To build DSS from Docker:
 
 ```bash
-docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_dss-sdk.sh
-docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_minio.sh
-docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_client.sh
-docker run --rm -v $(pwd):/DSS dss-build ./scripts/build_datamover.sh
+./scripts/docker/build_dss-sdk.sh
+./scripts/docker/build_minio.sh
+./scripts/docker/build_dss-client.sh
+./scripts/docker/build_datamover.sh
 ```
 
 ## Deploy DSS
