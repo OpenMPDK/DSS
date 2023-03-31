@@ -1,63 +1,62 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090,SC1091
+# The Clear BSD License
+#
+# Copyright (c) 2022 Samsung Electronics Co., Ltd.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted (subject to the limitations in the disclaimer
+# below) provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# * Neither the name of Samsung Electronics Co., Ltd. nor the names of its
+#   contributors may be used to endorse or promote products derived from this
+#   software without specific prior written permission.
+# NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
+# THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+# NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Build aws-sdk for DSS build / runtime
 set -e
 
-GIT_AWS_RELEASE=1.9
-SCRIPT_DIR=$(realpath ${PWD}/$(dirname $0))
-TOP_DIR=${PWD}/aws-build-$(date +%s)/
-INSTALL_DIR=${TOP_DIR}/BUILDROOT/aws-sdk-cpp-${GIT_AWS_RELEASE}-0.x86_64/usr/local
-AWS_SPEC_FILE="aws-${GIT_AWS_RELEASE}.spec"
-AWS_DIR="aws-git-${GIT_AWS_RELEASE}"
-GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
+# Load utility functions
+SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+. "$SCRIPT_DIR/utils.sh"
 
-#Cleanup old directories
-rm -rf $TOP_DIR
-rm -rf $AWS_DIR
+# Set build variables
+AWS_SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
 
-mkdir -p $INSTALL_DIR
+# Check for submodules in update init recursive if missing
+checksubmodules
 
-# Do git clone and build
-#git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git ${AWS_DIR}
-#git checkout release/${GIT_AWS_RELEASE}
-git clone --recursive https://github.com/breuner/aws-sdk-cpp.git ${AWS_DIR}
-git checkout ${GIT_CHECKOUT_TAG}
+# Check if aws-sdk-cpp RPM already built
+CHECK_AWS_RPM=$(find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' | wc -l)
 
-pushd ${AWS_DIR}
+# Only build aws-sdk-cpp RPM if not already built
+if [ "$CHECK_AWS_RPM" == 0 ]
+then
+    # Load GCC
+    . "$SCRIPT_DIR/load_gcc.sh"
 
-# Apply patches for building AWS
-patch -p1 < ${SCRIPT_DIR}/aws-git-${GIT_AWS_RELEASE}.patch
+    # Build aws-sdk-cpp
+    rpmbuild -ba "$AWS_SPEC_FILE"
+else
+    echo 'aws-sdk-cpp RPM already built. Skipping...'
+fi
 
-# Compiling the code
-source /opt/rh/devtoolset-8/enable
-cd crt/aws-crt-cpp
-cmake3 . -DBUILD_SHARED_LIBS=ON -DCPP_STANDARD=17 -DAUTORUN_UNIT_TESTS=OFF -DENABLE_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DBYO_CRYPTO=ON -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} && make -j $(nproc) install
-cd ../..
-cmake3 . -DBUILD_ONLY="s3;transfer" -DBUILD_SHARED_LIBS=ON -DCPP_STANDARD=17 -DAUTORUN_UNIT_TESTS=OFF -DENABLE_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DBYO_CRYPTO=ON -DBUILD_DEPS=OFF -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} && make -j $(nproc) install
-popd
-
-# Create spec file for RPM build
-cat > ${AWS_SPEC_FILE} << EOF
-Name:           aws-sdk-cpp
-Version:        ${GIT_AWS_RELEASE}
-Release:        0
-Summary:        Amazon Web Services SDK for C++
-License:        ASL 2.0
-URL:            https://github.com/aws/%{name}
-
-
-%define _unpackaged_files_terminate_build 0
-
-%description
-The Amazon Web Services (AWS) SDK for C++ provides a modern C++ interface for
-AWS. It is meant to be performant and fully functioning with low- and
-high-level SDKs, while minimizing dependencies and providing platform
-portability (Windows, OSX, Linux, and mobile).
-
-%files
-/usr/local/lib64/*
-/usr/local/include/*
-
-EOF
-
-# Build AWS RPM
-echo "Building AWS RPM ...."
-rpmbuild --define "_topdir ${TOP_DIR}" -bb ${AWS_SPEC_FILE} 
-
+echo 'Copying aws-sdk-cpp RPM to dss-ansible artifacts directory...'
+find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
