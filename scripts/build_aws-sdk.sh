@@ -2,17 +2,12 @@
 set -e
 
 DIR="$PWD/$(dirname "$0")"
-. "${DIR}/utils.sh"
-
 GIT_AWS_RELEASE=1.9
+AWS_SPEC_FILE="aws-${GIT_AWS_RELEASE}.spec"
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
 
-echo "Preparing the environment and the spec file"
-mkdir -p "${HOME}"/rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
 cp "$DIR/aws-git-${GIT_AWS_RELEASE}.patch" "$HOME"/rpmbuild/SOURCES/
-AWS_SPEC_FILE="$HOME/rpmbuild/SPECS/aws-${GIT_AWS_RELEASE}.spec"
-AWS_SDK_RPM_LOG="aws-sdk-cpp-rpmbuild.log"
-rpm -q aws-sdk-cpp &>/dev/null &&  rpm -e aws-sdk-cpp
+
 
 # Create spec file for RPM build
 cat > ${AWS_SPEC_FILE} << EOF
@@ -53,21 +48,9 @@ cmake3 . -DBUILD_ONLY="s3;transfer" -DBUILD_SHARED_LIBS=ON -DCPP_STANDARD=17 -DA
 /usr/local/lib64/*
 /usr/local/include/*
 
-%clean
-rm -rf aws-sdk-cpp
-rm -rf %_buildrootdir/aws-sdk-cpp*
-
 EOF
 
 # Build AWS RPM
-echo -n "Building AWS RPM ...."
-rpmbuild -bb ${AWS_SPEC_FILE}  &> "$AWS_SDK_RPM_LOG"
-if [ $? -ne 0 ]; then
-	echo "[Failed]" 
-	exit 1
-fi
-echo "[Success]"
+echo "Building AWS RPM ...."
+rpmbuild -bb ${AWS_SPEC_FILE} 
 
-unlink "$AWS_SDK_RPM_LOG"
-
-find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
