@@ -1,8 +1,9 @@
-#!/bin/bash
 set -e
 
 GIT_AWS_RELEASE=1.9
+SCRIPT_DIR=$(realpath ${PWD}/$(dirname $0))
 AWS_SPEC_FILE="aws-${GIT_AWS_RELEASE}.spec"
+AWS_DIR="aws-git-${GIT_AWS_RELEASE}"
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
 
 cp aws-git-${GIT_AWS_RELEASE}.patch $HOME/rpmbuild/SOURCES/
