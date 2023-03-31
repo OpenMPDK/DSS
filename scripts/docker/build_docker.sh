@@ -35,11 +35,20 @@ DOCKER_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Check for submodules and update init recursive if missing
 checksubmodules
 
-# Check if artifact already built
-CHECK_ARTIFACT=$(find "$ARTIFACTS_DIR/" -name "$ARTIFACT_BLOB" | wc -l)
+# Read ARTIFACT_BLOB var as array
+IFS=' ' read -ra ARTIFACT_LIST <<< "$ARTIFACT_BLOB"
 
-# Only build if artifact not already built
-if [ "$CHECK_ARTIFACT" == 0 ]
+# Check number of built artifacts
+CHECK_ARTIFACT=0
+for ARTIFACT in "${ARTIFACT_LIST[@]}"
+do
+    CHECK_ARTIFACT=$((CHECK_ARTIFACT+$(find "$ARTIFACTS_DIR/" -name "$ARTIFACT" | wc -l)))
+done
+echo "Num. Artifacts: $CHECK_ARTIFACT"
+echo "Num. Artifacts expected: ${#ARTIFACT_LIST[@]}"
+
+# Only build if number of built artifacts does not match number of blobs
+if [ "$CHECK_ARTIFACT" != "${#ARTIFACT_LIST[@]}" ]
 then
     # Build Docker image
     DOCKERBUILDSTR="docker build -t $DOCKER_TAG -f $DOCKER_DIR/$DOCKERFILE_NAME.Dockerfile $DSS_DIR"
@@ -48,13 +57,17 @@ then
 
     # Check if the docker build should run as the current user
     USERSTR=''
-    CHOWNSTR="&& chown $(id -u "${USER}"):$(id -g "${USER}") dss-ansible/artifacts/$ARTIFACT_BLOB"
+    CHOWNSTR=''
 
     if [[ "$USERFLAG" == true ]]
     then
       USERSTR="-u $(id -u "${USER}"):$(id -g "${USER}")"
-      CHOWNSTR=''
       echo "Running build in Docker with USERFLAG enabled"
+    else
+      for ARTIFACT in "${ARTIFACT_LIST[@]}"
+      do
+          CHOWNSTR="$CHOWNSTR && chown $(id -u "${USER}"):$(id -g "${USER}") dss-ansible/artifacts/$ARTIFACT"
+      done
     fi
 
     # Build component with Docker container
