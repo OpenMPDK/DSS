@@ -4,7 +4,8 @@ COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
 	&& yum install -y \
-        epel-release centos-release-scl-rh && \
+        epel-release \
+        centos-release-scl-rh && \
     yum install -y \
 		bc \
         bison \
@@ -16,16 +17,20 @@ RUN set -eux \
 		dpkg \
 		elfutils-libelf-devel \
         flex \
+        gcc \
         gcc-c++ \
 		git \
 		glibc-devel \
+        gmp-devel \
 		jemalloc-devel \
 		Judy-devel \
 		libaio-devel \
 		libcurl-devel \
+        libmpc-devel \
 		libuuid-devel \
 		man-db \
 		meson \
+        mpfr-devel \
 		ncurses-devel \
 		numactl-devel \
 		openssl-devel \
@@ -35,6 +40,7 @@ RUN set -eux \
 		python3-devel \
 		python3-pip \
 		rdma-core-devel \
+        redhat-lsb-core \
         rpm-build \
 		ruby-devel \
 		snappy-devel \
@@ -84,4 +90,4 @@ ENV GEM_HOME="/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.7.0.2747-linux/bin"
 COPY scripts/stagemainartifacts.sh /
 COPY scripts/getminiodeps.sh /
-WORKDIR /dss-sdk
+WORKDIR /DSS

@@ -15,4 +15,4 @@ RUN set -eux \
         zlib-devel && \
     yum clean all && \
     rm -rf /var/cache/yum
-WORKDIR /gcc/
+WORKDIR /gcc
