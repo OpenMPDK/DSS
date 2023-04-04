@@ -3,37 +3,45 @@ FROM centos:centos7.8.2003
 COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
-	&& yum install -y \
-        epel-release && \
-    yum group install -y \
-        "Development Tools" && \
+    && yum install -y \
+        epel-release \
+        centos-release-scl-rh && \
     yum install -y \
-		bc \
+        bc \
+        bison \
         boost-devel \
-        check \
         cmake \
         cmake3 \
         CUnit-devel \
-        dejagnu \
+        devtoolset-11 \
         dpkg \
         elfutils-libelf-devel \
-        expect \
+        flex \
+        gcc \
+        gcc-c++ \
+        git \
         glibc-devel \
+        gmp-devel \
         jemalloc-devel \
         Judy-devel \
         libaio-devel \
         libcurl-devel \
+        libmpc-devel \
         libuuid-devel \
+        man-db \
         meson \
+        mpfr-devel \
         ncurses-devel \
         numactl-devel \
         openssl-devel \
+        patch \
         pulseaudio-libs-devel \
         python3 \
         python3-devel \
         python3-pip \
         rdma-core-devel \
-        redhat-lsb \
+        redhat-lsb-core \
+        rpm-build \
         ruby-devel \
         snappy-devel \
         tbb-devel \
@@ -44,6 +52,11 @@ RUN set -eux \
     rm -f ./*.rpm && \
     yum clean all && \
     rm -rf /var/cache/yum && \
+    chmod -R 0777 /var/lib/rpm/ && \
+    mkdir /var/cache/yum && \
+    chmod 0777 /var/cache/yum && \
+    mkdir /.cache && \
+    chmod 0777 /.cache && \
     python3 -m pip install pybind11 && \
     gem install --no-ri --no-rdoc --conservative --user-install --minimal-deps \
         dotenv:2.7.6 \
@@ -60,8 +73,11 @@ RUN set -eux \
         insist:1.0.0 \
         pleaserun:0.0.32 \
         fpm:1.13.1 && \
+    mv /root/.gem / && \
+    chmod -R 0777 /.gem && \
     git config --global user.email "docker@msl.lab" && \
     git config --global user.name "Docker Build" && \
+    cp /root/.gitconfig / && \
     wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip && \
     unzip build-wrapper-linux-x86.zip && \
     rm -rf build-wrapper-linux-x86.zip && \
@@ -72,7 +88,7 @@ RUN set -eux \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf ./aws
-ENV GEM_HOME="/root/.gem/ruby"
+ENV GEM_HOME="/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.7.0.2747-linux/bin"
 COPY scripts/stagemainartifacts.sh /
 COPY scripts/getminiodeps.sh /

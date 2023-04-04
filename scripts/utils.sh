@@ -30,7 +30,7 @@
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Set path vars used by all build scripts
-SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DSS_DIR=$(realpath "$SCRIPT_DIR/..")
 export DSS_DIR
 export AWS_SPEC_FILE="$SCRIPT_DIR/aws-sdk-cpp.spec"
@@ -51,8 +51,6 @@ set -e
 checksubmodules()
 {
     echo 'Checking submodules for init...'
-    SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
-    DSS_DIR=$(realpath "$SCRIPT_DIR/..")
 
     # Get list of repository paths from .gitmodules
     mapfile -t REPOS < <(grep -oP "path = \K.+" "$DSS_DIR/.gitmodules")
