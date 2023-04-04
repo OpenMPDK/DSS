@@ -3,7 +3,7 @@
 FROM centos:centos7.8.2003
 COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 RUN set -eux \
-	&& yum install -y \
+    && yum install -y \
         epel-release &&  \
     yum install -y \
         boost-devel \

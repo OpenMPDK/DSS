@@ -3,50 +3,50 @@ FROM centos:centos7.8.2003
 COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
-	&& yum install -y \
+    && yum install -y \
         epel-release \
         centos-release-scl-rh && \
     yum install -y \
-		bc \
+        bc \
         bison \
-		boost-devel \
-		cmake \
-		cmake3 \
-		CUnit-devel \
-		devtoolset-11 \
-		dpkg \
-		elfutils-libelf-devel \
+        boost-devel \
+        cmake \
+        cmake3 \
+        CUnit-devel \
+        devtoolset-11 \
+        dpkg \
+        elfutils-libelf-devel \
         flex \
         gcc \
         gcc-c++ \
-		git \
-		glibc-devel \
+        git \
+        glibc-devel \
         gmp-devel \
-		jemalloc-devel \
-		Judy-devel \
-		libaio-devel \
-		libcurl-devel \
+        jemalloc-devel \
+        Judy-devel \
+        libaio-devel \
+        libcurl-devel \
         libmpc-devel \
-		libuuid-devel \
-		man-db \
-		meson \
+        libuuid-devel \
+        man-db \
+        meson \
         mpfr-devel \
-		ncurses-devel \
-		numactl-devel \
-		openssl-devel \
-		patch \
-		pulseaudio-libs-devel \
-		python3 \
-		python3-devel \
-		python3-pip \
-		rdma-core-devel \
+        ncurses-devel \
+        numactl-devel \
+        openssl-devel \
+        patch \
+        pulseaudio-libs-devel \
+        python3 \
+        python3-devel \
+        python3-pip \
+        rdma-core-devel \
         redhat-lsb-core \
         rpm-build \
-		ruby-devel \
-		snappy-devel \
-		tbb-devel \
-		wget \
-		zlib-devel \
+        ruby-devel \
+        snappy-devel \
+        tbb-devel \
+        wget \
+        zlib-devel \
         /dss-gcc510*.rpm \
         /aws-sdk-cpp*.rpm && \
     rm -f ./*.rpm && \

@@ -2,7 +2,7 @@
 
 FROM centos:centos7.8.2003
 RUN set -eux \
-	&& yum install -y \
+    && yum install -y \
         epel-release && \
     yum install -y \
         bc \
