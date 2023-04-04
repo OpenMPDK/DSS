@@ -62,13 +62,13 @@ EOF
 
 # Build AWS RPM
 echo -n "Building AWS RPM ...."
-if ! rpmbuild -bb "$AWS_SPEC_FILE"  &> "$AWS_SDK_RPM_LOG";
+if ! rpmbuild -bb "$AWS_SPEC_FILE";
 then
 	echo "[Failed]" 
 	exit 1
 fi
+exit
 echo "[Success]"
 
-unlink "$AWS_SDK_RPM_LOG"
 
 find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
