@@ -67,8 +67,6 @@ then
 	echo "[Failed]" 
 	exit 1
 fi
-exit
 echo "[Success]"
-
 
 find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
