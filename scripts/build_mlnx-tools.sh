@@ -91,6 +91,7 @@ then
         TOOLSVERSION=$(grep -oP "Version: \K.+" "$MLNX_TOOLS_NAME"/mlnx-tools.spec)
         SRCTAR="$MLNX_TOOLS_NAME-$TOOLSVERSION.tar.gz"
         tar czvf "$SRCTAR" "$MLNX_TOOLS_NAME" --transform "s/$MLNX_TOOLS_NAME/$MLNX_TOOLS_NAME-$TOOLSVERSION/"
+        mkdir -p "$RPMBUILD_DIR"/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
         mv "$SRCTAR" "$RPMBUILD_DIR/SOURCES"
 
         pushd "$MLNX_TOOLS_NAME"
