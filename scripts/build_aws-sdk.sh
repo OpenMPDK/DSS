@@ -12,7 +12,6 @@ echo "Preparing the environment and the spec file"
 mkdir -p "${HOME}"/rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
 cp "$DIR/aws-git-${GIT_AWS_RELEASE}.patch" "$HOME"/rpmbuild/SOURCES/
 AWS_SPEC_FILE="$HOME/rpmbuild/SPECS/aws-${GIT_AWS_RELEASE}.spec"
-AWS_SDK_RPM_LOG="aws-sdk-cpp-rpmbuild.log"
 rpm -q aws-sdk-cpp &>/dev/null &&  rpm -e aws-sdk-cpp
 
 # Create spec file for RPM build
