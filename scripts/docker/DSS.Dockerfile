@@ -90,6 +90,6 @@ RUN set -eux \
     rm -rf ./aws
 ENV GEM_HOME="/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.7.0.2747-linux/bin"
-COPY scripts/stagemainartifacts.sh /
+COPY scripts/stagemergeartifacts.sh /
 COPY scripts/getminiodeps.sh /
 WORKDIR /DSS
