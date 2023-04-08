@@ -1,0 +1,69 @@
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: AWS Access Key
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: AWS Secret Key
+        required: true
+      AWS_ACCOUNT_ID:
+        description: AWS Account ID
+        required: true
+      REPOSITORY_NAME:
+        description: ECR Repository Name
+        required: true
+
+    inputs:
+      project-name:
+        description: Name of the CodeBuild Project
+        required: false
+        default: OpenMPDK_DSS
+        type: string
+      compute-type-override:
+        description: Compute type for CodeBuild runtime
+        required: false
+        default: BUILD_GENERAL1_SMALL
+        type: string
+      component:
+        description: Name of the component you want to build (for display only)
+        required: true
+        type: string
+      buildspec:
+        description: CodeBuild buildspec filename (inside ./buildspec/) - Derived from 'component' by default
+        required: false
+        type: string
+      image:
+        description: Custom image to use for CodeBuild runtime, if not the default dss-build image
+        required: false
+        type: string
+
+jobs:
+  build-aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1
+      - name: Derive the branchname for ECR tag (replace '/' with '_')
+        id: nice_branchname
+        run: |
+          # Use REF to get branch name if a merge, else use BASE_REF
+          if [[ "${{ github.ref_name }}" == "refs/heads"* ]]
+          then
+              BRANCH_NAME=$(echo "${{ github.ref_name }}" | cut --complement -c 1-11)
+          else
+              BRANCH_NAME="${{ github.base_ref }}"
+          fi
+          echo "NICE_BRANCHNAME=$(echo "$BRANCH_NAME" | tr '/' '_')" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - name: "Execute ${{ inputs.component }} workflow on CodeBuild"
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: ${{ inputs.project-name }}
+          compute-type-override: ${{ inputs.compute-type-override }}
+          buildspec-override: "./buildspec/${{ inputs.buildspec != '' && inputs.buildspec || format('{0}.yml', inputs.component) }}"
+          image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ inputs.image != '' && inputs.image || format('dss-build_{0}', steps.nice_branchname.outputs.NICE_BRANCHNAME) }}"
