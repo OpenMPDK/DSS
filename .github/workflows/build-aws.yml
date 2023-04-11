@@ -51,12 +51,13 @@ jobs:
       - name: Derive the branchname for ECR tag (replace '/' with '_')
         id: nice_branchname
         run: |
-          # Use REF to get branch name if a merge, else use BASE_REF
-          if [[ "${{ github.ref_name }}" == "refs/heads"* ]]
+          # Use base_ref if PR
+          if [[ "${{ github.ref_name }}" == *"/merge" ]]
           then
-              BRANCH_NAME=$(echo "${{ github.ref_name }}" | cut --complement -c 1-11)
-          else
               BRANCH_NAME="${{ github.base_ref }}"
+          # Use ref_name if merge
+          else
+              BRANCH_NAME="${{ github.ref_name }}"
           fi
           echo "NICE_BRANCHNAME=$(echo "$BRANCH_NAME" | tr '/' '_')" >> "$GITHUB_OUTPUT"
         shell: bash
