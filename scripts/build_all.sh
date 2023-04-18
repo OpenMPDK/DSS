@@ -43,8 +43,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 "$SCRIPT_DIR/build_kernel.sh"
 "$SCRIPT_DIR/build_mlnx-tools.sh"
 
-# Build DSS
+# # Build DSS
 "$SCRIPT_DIR/build_dss-sdk.sh"
 "$SCRIPT_DIR/build_minio.sh"
-"$SCRIPT_DIR/build_dss_client.sh"
+"$SCRIPT_DIR/build_dss-client.sh"
 "$SCRIPT_DIR/build_datamover.sh"
