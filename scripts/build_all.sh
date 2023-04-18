@@ -46,5 +46,5 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Build DSS
 "$SCRIPT_DIR/build_dss-sdk.sh"
 "$SCRIPT_DIR/build_minio.sh"
-"$SCRIPT_DIR/build_client.sh"
+"$SCRIPT_DIR/build_dss_client.sh"
 "$SCRIPT_DIR/build_datamover.sh"
