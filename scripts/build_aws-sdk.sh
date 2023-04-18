@@ -2,27 +2,27 @@
 # shellcheck disable=SC1090,SC1091
 set -e
 
-DIR="$PWD/$(dirname "$0")"
-source "${DIR}/utils.sh"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR/utils.sh"
 
 GIT_AWS_RELEASE=1.9
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
 
 echo "Preparing the environment and the spec file"
-mkdir -p "${HOME}"/rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
-cp "$DIR/aws-git-${GIT_AWS_RELEASE}.patch" "$HOME"/rpmbuild/SOURCES/
-AWS_SPEC_FILE="$HOME/rpmbuild/SPECS/aws-${GIT_AWS_RELEASE}.spec"
+mkdir -p "$HOME"/rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
+cp "$SCRIPT_DIR/aws-git-$GIT_AWS_RELEASE.patch" "$HOME"/rpmbuild/SOURCES/
+AWS_SPEC_FILE="$HOME/rpmbuild/SPECS/aws-$GIT_AWS_RELEASE.spec"
 rpm -q aws-sdk-cpp &>/dev/null &&  rpm -e aws-sdk-cpp
 
 # Create spec file for RPM build
-cat > "${AWS_SPEC_FILE}" << EOF
+cat > "$AWS_SPEC_FILE" << EOF
 Name:           aws-sdk-cpp
-Version:        ${GIT_AWS_RELEASE}
+Version:        $GIT_AWS_RELEASE
 Release:        0
 Summary:        Amazon Web Services SDK for C++
 License:        ASL 2.0
 URL:            https://github.com/aws/%{name}
-Patch0:		aws-git-${GIT_AWS_RELEASE}.patch
+Patch0:         aws-git-$GIT_AWS_RELEASE.patch
 
 
 %define _unpackaged_files_terminate_build 0
@@ -37,7 +37,7 @@ portability (Windows, OSX, Linux, and mobile).
 rm -rf aws-sdk-cpp
 git clone --recursive -q https://github.com/breuner/aws-sdk-cpp.git 
 cd aws-sdk-cpp
-git checkout ${GIT_CHECKOUT_TAG}
+git checkout $GIT_CHECKOUT_TAG
 
 %patch0 -p1
 
@@ -63,9 +63,9 @@ EOF
 echo -n "Building AWS RPM ...."
 if ! rpmbuild -bb "$AWS_SPEC_FILE";
 then
-	echo "[Failed]" 
-	exit 1
+    echo "[Failed]" 
+    exit 1
 fi
 echo "[Success]"
 
-find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_DIR/" \;
+find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_SCRIPT_DIR/" \;

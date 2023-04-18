@@ -33,7 +33,7 @@
 set -e
 
 # Load utility functions
-SCRIPT_DIR=$(readlink -f "$(dirname "$0")")
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 . "$SCRIPT_DIR/utils.sh"
 
 # Check for submodules in update init recursive if missing
