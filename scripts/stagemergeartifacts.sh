@@ -45,9 +45,9 @@ fi
 if [[ $GITHUB_REF ]]
 then
     BRANCH_NAME=$(echo "$GITHUB_REF" | cut --complement -c 1-11)
-elif [[ $CI_MERGE_REQUEST_TARGET_BRANCH_NAME ]]
+elif [[ $CI_COMMIT_BRANCH ]]
 then
-    BRANCH_NAME=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    BRANCH_NAME=$CI_COMMIT_BRANCH
 else
     echo "*** ERROR - I could not derive the branch name."
     exit 1
