@@ -17,26 +17,38 @@ then
     exit 1
 fi
 
-# Check if GITHUB_REF_NAME is defined
-if [[ "$GITHUB_REF_NAME" == '' ]]
+# Check if GITHUB_REF_NAME or CI_COMMIT_BRANCH is defined
+if [[ "$GITHUB_REF_NAME" == '' &&  "$CI_COMMIT_BRANCH" == '' ]]
 then
-    echo "*** ERROR: GITHUB_REF_NAME var not defined"
+    echo "*** ERROR: GITHUB_REF_NAME or CI_COMMIT_BRANCH var not defined"
     exit 1
 fi
 
 # Derive the branch name for corresponding dss-sdk artifact
-# Use GITHUB_BASE_REF if PR
+# Use GITHUB_BASE_REF if GitHub PR
 if [[ "$GITHUB_REF_NAME" == *"/merge" ]]
 then
-    BRANCH_NAME="$GITHUB_BASE_REF"
-# Use GITHUB_REF_NAME if merge or push
+    BRANCH_NAME=$GITHUB_BASE_REF
+# Use GITHUB_REF_NAME if GitHub merge or push
+elif [[ "$GITHUB_REF_NAME" ]]
+then
+    BRANCH_NAME=$GITHUB_REF_NAME
+# Use CI_MERGE_REQUEST_TARGET_BRANCH_NAME if GitLab MR
+elif [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]]
+then
+    BRANCH_NAME=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+# Use CI_COMMIT_BRANCH if GitLab merge or push
+elif [[ "$CI_COMMIT_BRANCH" ]]
+then
+    BRANCH_NAME=$CI_COMMIT_BRANCH
 else
-    BRANCH_NAME="$GITHUB_REF_NAME"
+    echo "*** ERROR: Could not derive the branch name"
+    exit 1
 fi
 
 # Get latest dss-sdk main artifact
 set +e
-DSSSDKARTIFACT=$(aws s3 ls "$DSSS3URI/$BRANCH_NAME"/ | sort --reverse | grep -oP "${DSSSDKGLOB//\*/.*}" | head -n 1)
+DSSSDKARTIFACT=$(aws s3 ${MINIO_HOST_URL:+--endpoint-url $MINIO_HOST_URL} ls "$DSSS3URI/$BRANCH_NAME"/ | sort --reverse | grep -oP "${DSSSDKGLOB//\*/.*}" | head -n 1)
 set -e
 
 # Check if dss-sdk artifact found in bucket
@@ -49,7 +61,7 @@ fi
 # Download and extract dss-sdk artifact
 echo "Staging dss-sdk libs and includes from artifact: $DSSSDKARTIFACT from branch '$BRANCH_NAME'"
 mkdir -p ../dss-sdk/host ../dss-sdk/host_out
-aws s3 cp "$DSSS3URI/$BRANCH_NAME/$DSSSDKARTIFACT" - | tar xfz - --wildcards --directory=../dss-sdk/host/ nkv-sdk/include/* --directory=../host_out/ nkv-sdk/lib/* --strip=1
+aws s3 ${MINIO_HOST_URL:+--endpoint-url $MINIO_HOST_URL} cp "$DSSS3URI/$BRANCH_NAME/$DSSSDKARTIFACT" - | tar xfz - --wildcards --directory=../dss-sdk/host/ nkv-sdk/include/* --directory=../host_out/ nkv-sdk/lib/* --strip=1
 
 # Download s3-benchmark
 echo "Staging s3-benchmark from URL: $S3BENCHURL"

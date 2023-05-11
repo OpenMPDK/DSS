@@ -6,8 +6,10 @@ set -e
 # This folder will match the branch name of the merge.
 # If artifacts exist in this folder matching a file glob, remove them first.
 #
-# This script will only execute when triggered by a GitHub merge event.
-# This is determined by the presence of the substring 'refs/heads/' in a $GITHUB_REF var.
+# This script will only execute when triggered by a GitHub / GitLab merge event.
+# More plainly, this is when a commit is pushed to a protected branch (after PR / MR).
+# This is determined by the presence of the substring 'refs/heads/' in a $GITHUB_REF var,
+#   or when $CI_PIPELINE_SOURCE == "push".
 #
 # This script must be passed the following vars:
 #   DSSS3URI:   The S3 URI pointing to the artifacts bucket
@@ -33,14 +35,23 @@ then
 fi
 
 # Check if build was triggered by merge. Otherwise skip (eg: skip PR or manual build)
-if [[ $GITHUB_REF != "refs/heads"* ]]
+if [[ $GITHUB_REF != "refs/heads"* && $CI_PIPELINE_SOURCE != "push" ]]
 then
-    echo "Not a GitHub merge. Skipping main artifacts rotation."
+    echo "Not a merge. Skipping artifact rotation."
     exit 0
 fi
 
 # Derive the branch name
-BRANCH_NAME=$(echo "$GITHUB_REF" | cut --complement -c 1-11)
+if [[ $GITHUB_REF ]]
+then
+    BRANCH_NAME=$(echo "$GITHUB_REF" | cut --complement -c 1-11)
+elif [[ $CI_COMMIT_BRANCH ]]
+then
+    BRANCH_NAME=$CI_COMMIT_BRANCH
+else
+    echo "*** ERROR - I could not derive the branch name."
+    exit 1
+fi
 
 # Find local artifacts
 LOCALARTIFACTS=()
@@ -61,7 +72,7 @@ done
 for GLOB in "${DSSGLOBLIST[@]}"
 do
     set +e
-    mapfile -t REMOTEARTIFACTS < <(aws s3 ls "$DSSS3URI/$BRANCH_NAME/" | grep -oP "${GLOB//\*/.*}")
+    mapfile -t REMOTEARTIFACTS < <(aws s3 ${MINIO_HOST_URL:+--endpoint-url $MINIO_HOST_URL} ls "$DSSS3URI/$BRANCH_NAME/" | grep -oP "${GLOB//\*/.*}")
     set -e
 
     if [[ "${REMOTEARTIFACTS[0]}" == '' ]]
@@ -71,7 +82,7 @@ do
         for artifact in "${REMOTEARTIFACTS[@]}"
         do
             echo "Deleting existing object from artifacts bucket: $artifact"
-            aws s3 rm "$DSSS3URI/$BRANCH_NAME/$artifact" --only-show-errors
+            aws s3 ${MINIO_HOST_URL:+--endpoint-url $MINIO_HOST_URL} rm "$DSSS3URI/$BRANCH_NAME/$artifact" --only-show-errors
         done
     fi
 done
@@ -80,5 +91,5 @@ done
 for file in "${LOCALARTIFACTS[@]}"
 do
     echo "Copying file to artifacts bucket: $file"
-    aws s3 cp "$file" "$DSSS3URI/$BRANCH_NAME/" --only-show-errors
+    aws s3 ${MINIO_HOST_URL:+--endpoint-url $MINIO_HOST_URL} cp "$file" "$DSSS3URI/$BRANCH_NAME/" --only-show-errors
 done
