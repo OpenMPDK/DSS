@@ -59,6 +59,7 @@ RUN set -eux \
     chmod 0777 /var/cache/yum && \
     mkdir /.cache && \
     chmod 0777 /.cache && \
+    python3 -m pip install gcovr \
     python3 -m pip install --no-cache-dir --upgrade --no-compile pip && \
     python3 -m pip install --no-cache-dir --no-compile pip \
         "ansible>=2.9,<2.10" \
