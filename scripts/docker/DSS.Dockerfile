@@ -63,6 +63,7 @@ RUN set -eux \
     python3 -m pip install --no-cache-dir --no-compile pip \
         "ansible>=2.9,<2.10" \
         ansible-lint==5.3.2 \
+	gcovr==5.0 \
         pybind11 \
         pycodestyle==2.8.0 \
         shellcheck-py==0.8.0.3 && \
@@ -102,5 +103,4 @@ ENV GEM_HOME="/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.8.0.2856-linux/bin"
 ENV PYTHONWARNINGS=ignore::UserWarning
 COPY scripts/stagemergeartifacts.sh /
-COPY scripts/getminiodeps.sh /
 WORKDIR /DSS
