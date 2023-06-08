@@ -103,5 +103,4 @@ ENV GEM_HOME="/.gem/ruby"
 ENV PATH="$PATH:$GEM_HOME/bin:/build-wrapper-linux-x86:/sonar-scanner-4.8.0.2856-linux/bin"
 ENV PYTHONWARNINGS=ignore::UserWarning
 COPY scripts/stagemergeartifacts.sh /
-COPY scripts/getminiodeps.sh /
 WORKDIR /DSS
