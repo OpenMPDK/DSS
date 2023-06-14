@@ -63,7 +63,7 @@ RUN set -eux \
     python3 -m pip install --no-cache-dir --no-compile pip \
         "ansible>=2.9,<2.10" \
         ansible-lint==5.3.2 \
-	gcovr==5.0 \
+	    gcovr==5.0 \
         pybind11 \
         pycodestyle==2.8.0 \
         shellcheck-py==0.8.0.3 && \
