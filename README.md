@@ -10,33 +10,58 @@ Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, 
 
 [How to build, deploy, and use DSS software](https://youtu.be/fpAFvLhTpqw)
 
-## Prerequisites
+## Build DSS - Docker
 
-### Operating system requirements
+DSS is optimally built via Docker using the scripts documented below.
+
+```bash
+./scripts/docker/build_all.sh
+```
+
+To build individual DSS dependencies via Docker:
+
+```bash
+./scripts/docker/build_gcc.sh
+./scripts/docker/build_aws-sdk.sh
+./scripts/docker/build_kernel.sh
+./scripts/docker/build_mlnx-tools.sh
+```
+
+To build individual DSS components from Docker:
+
+```bash
+./scripts/docker/build_dss-sdk.sh
+./scripts/docker/build_minio.sh
+./scripts/docker/build_dss-client.sh
+./scripts/docker/build_datamover.sh
+```
+
+## Build DSS
+
+Optionally, DSS can be built natively, but all dependencies must be installed first.
+
+### Prerequisites
+
+#### Operating system requirements
 
 DSS build and runtime is presently supported on CentOS 7.8.
 
-### Build package dependencies
+#### Build package dependencies
 
 Install the following packages / modules to build DSS and its external dependencies:
 
 ```bash
-sudo yum install epel-release -y
-sudo yum group install "Development Tools" -y
-sudo yum install bc boost-devel check cmake cmake3 CUnit-devel dejagnu dpkg elfutils-libelf-devel expect \
-  glibc-devel jemalloc-devel Judy-devel libaio-devel libcurl-devel libuuid-devel meson ncurses-devel numactl-devel \
-  openssl-devel pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb ruby-devel \
+sudo yum install epel-release centos-release-scl-rh -y
+sudo yum install bc bison boost-devel cmake cmake3 CUnit-devel devtoolset-11 dpkg elfutils-libelf-devel \
+  flex gcc gcc-c++ git glibc-devel gmp-devel jemalloc-devel Judy-devel libaio-devel libcurl-devel libmpc-devel \
+  libuuid-devel make man-db meson mpfr-devel ncurses-devel numactl-devel openssl openssl-devel patch \
+  pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb-core rpm-build ruby-devel \
   snappy-devel tbb-devel wget zlib-devel -y
-sudo python3 -m pip install pybind11
-sudo gem install ffi -v 1.12.2
-sudo gem install git -v 1.6.0
-sudo gem install rb-inotify -v 0.9.10
-sudo gem install rexml -v 3.2.3
-sudo gem install backports -v 3.21.0
-sudo gem install fpm
+sudo yum group install "Development Tools" -y
+sudo python3 -m pip install pybind11 gcovr==5.0
+sudo gem install dotenv:2.7.6 cabin:0.9.0 arr-pm:0.0.11 ffi:1.12.2 rchardet:1.8.0 git:1.7.0 rexml:3.2.4 backports:3.21.0 \
+  clamp:1.0.1 mustache:0.99.8 stud:0.0.23 insist:1.0.0 pleaserun:0.0.32 fpm:1.13.1
 ```
-
-## Build DSS
 
 **NOTE: User-built GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
 
@@ -75,32 +100,6 @@ DSS individual components:
 * Build dss-minio: `./scripts/build_minio.sh`
 * Build dss-client: `./scripts/build_dss-client.sh`
 * Build dss-datamover: `./scripts/build_datamover.sh`
-
-## Build Docker
-
-DSS can alternatively be built via Docker.
-
-```bash
-./scripts/docker/build_all.sh
-```
-
-To build individual DSS dependencies via Docker:
-
-```bash
-./scripts/docker/build_gcc.sh
-./scripts/docker/build_aws-sdk.sh
-./scripts/docker/build_kernel.sh
-./scripts/docker/build_mlnx-tools.sh
-```
-
-To build individual DSS components from Docker:
-
-```bash
-./scripts/docker/build_dss-sdk.sh
-./scripts/docker/build_minio.sh
-./scripts/docker/build_dss-client.sh
-./scripts/docker/build_datamover.sh
-```
 
 ## Deploy DSS
 
