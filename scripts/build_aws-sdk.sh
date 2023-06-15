@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC1090,SC1091
 set -e
 
@@ -7,12 +7,35 @@ source "$SCRIPT_DIR/utils.sh"
 
 GIT_AWS_RELEASE=1.9
 GIT_CHECKOUT_TAG="1.9.343-elbencho-tag"
+ARTIFACT='aws-sdk-cpp-*.rpm'
+
+# Check if aws-sdk-cpp RPM is already built and present in dss-ansible/artifacts dir
+CHECK_ARTIFACT=$(find "$ARTIFACTS_DIR/" -name "$ARTIFACT" | wc -l)
+
+# Skip build if RPM is present
+if [ "$CHECK_ARTIFACT" -gt 0 ]
+then
+    echo "aws-sdk-cpp RPM is present in $ARTIFACTS_DIR" - Skipping...
+    exit 0
+fi
+
+# Check if aws-sdk-cpp RPM is already installed
+set +e
+CHECK_RPM_INSTALLED=$(rpm -q aws-sdk-cpp)
+set -e
+
+# Abort if aws-sdk-cpp RPM is installed - must be uninstalled before build
+if [ "$CHECK_RPM_INSTALLED" != 'package aws-sdk-cpp is not installed' ]
+then
+    echo "aws-sdk-cpp RPM is installed."
+    echo "aws-sdk-cpp RPM must be uninstalled before rebuilding: \"sudo yum remove aws-sdk-cpp -y\""
+    exit 1
+fi
 
 echo "Preparing the environment and the spec file"
-mkdir -p "$HOME"/rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
-cp "$SCRIPT_DIR/aws-git-$GIT_AWS_RELEASE.patch" "$HOME"/rpmbuild/SOURCES/
-AWS_SPEC_FILE="$HOME/rpmbuild/SPECS/aws-$GIT_AWS_RELEASE.spec"
-rpm -q aws-sdk-cpp &>/dev/null &&  rpm -e aws-sdk-cpp
+mkdir -p "$RPMBUILD_DIR"/{SOURCES,BUILD,RPMS,SPECS}
+cp "$SCRIPT_DIR/aws-git-$GIT_AWS_RELEASE.patch" "$RPMBUILD_DIR/SOURCES/"
+AWS_SPEC_FILE="$RPMBUILD_DIR/SPECS/aws-$GIT_AWS_RELEASE.spec"
 
 # Create spec file for RPM build
 cat > "$AWS_SPEC_FILE" << EOF
@@ -35,9 +58,8 @@ portability (Windows, OSX, Linux, and mobile).
 
 %prep
 rm -rf aws-sdk-cpp
-git clone --recursive -q https://github.com/breuner/aws-sdk-cpp.git 
+git clone --recursive -q https://github.com/breuner/aws-sdk-cpp.git --branch $GIT_CHECKOUT_TAG --single-branch
 cd aws-sdk-cpp
-git checkout $GIT_CHECKOUT_TAG
 
 %patch0 -p1
 
@@ -68,4 +90,4 @@ then
 fi
 echo "[Success]"
 
-find "$RPM_DIR" -name 'aws-sdk-cpp*.rpm' -exec cp {} "$ARTIFACTS_SCRIPT_DIR/" \;
+find "$RPM_DIR" -name "$ARTIFACT" -exec cp {} "$ARTIFACTS_DIR/" \;
