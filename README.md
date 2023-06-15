@@ -4,7 +4,7 @@ Disaggregated Storage Solution
 
 ## What is DSS
 
-Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
+DSS is a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution developed by Samsung. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
 
 [![How to build, deploy, and use DSS software](https://img.youtube.com/vi/fpAFvLhTpqw/0.jpg)](https://youtu.be/fpAFvLhTpqw "How to build, deploy, and use DSS software")
 
@@ -14,11 +14,17 @@ Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, 
 
 DSS is optimally built via Docker using the scripts documented below.
 
+### Build All - Docker
+
+Build all of the DSS artifacts and its dependency artifacts using one script:
+
 ```bash
 ./scripts/docker/build_all.sh
 ```
 
-To build individual DSS dependencies via Docker:
+### Build Dependencies - Docker
+
+Optionally, build only the dependencies artifacts:
 
 ```bash
 ./scripts/docker/build_gcc.sh
@@ -27,7 +33,9 @@ To build individual DSS dependencies via Docker:
 ./scripts/docker/build_mlnx-tools.sh
 ```
 
-To build individual DSS components from Docker:
+### Build DSS Artifacts - Docker
+
+Optionally, build only the DSS artifacts:
 
 ```bash
 ./scripts/docker/build_dss-sdk.sh
@@ -38,7 +46,7 @@ To build individual DSS components from Docker:
 
 ## Build DSS
 
-Optionally, DSS can be built natively, but all dependencies must be installed first.
+Alternatively, DSS can be built natively, but all dependencies must be installed first.
 
 ### Prerequisites
 
@@ -57,7 +65,6 @@ sudo yum install bc bison boost-devel cmake cmake3 CUnit-devel devtoolset-11 dpk
   libuuid-devel make man-db meson mpfr-devel ncurses-devel numactl-devel openssl openssl-devel patch \
   pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb-core rpm-build ruby-devel \
   snappy-devel tbb-devel wget zlib-devel -y
-sudo yum group install "Development Tools" -y
 sudo python3 -m pip install pybind11 gcovr==5.0
 sudo gem install dotenv:2.7.6 cabin:0.9.0 arr-pm:0.0.11 ffi:1.12.2 rchardet:1.8.0 git:1.7.0 rexml:3.2.4 backports:3.21.0 \
   clamp:1.0.1 mustache:0.99.8 stud:0.0.23 insist:1.0.0 pleaserun:0.0.32 fpm:1.13.1
@@ -67,19 +74,11 @@ sudo gem install dotenv:2.7.6 cabin:0.9.0 arr-pm:0.0.11 ffi:1.12.2 rchardet:1.8.
 
 On initial build:
 
-1. Build GCC
-2. Install the resulting GCC RPM
-3. Build AWS-SDK-CPP
-4. Install the resulting AWS-SDK-CPP RPM.
-5. Run the `build_all.sh` script
-
-```bash
-./scripts/build_gcc.sh
-sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y
-./scripts/build_aws-sdk.sh
-sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-1.9-0-0.x86_64.rpm -y
-./scripts/build_all.sh
-```
+1. Build GCC: `./scripts/build_gcc.sh`
+2. Install the resulting GCC RPM: `sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y`
+3. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
+4. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
+5. Run the `build_all.sh` script: `./scripts/build_all.sh`
 
 Once the GCC and AWS RPMs are installed, only the `build_all.sh` script needs to be run on subsequent builds.
 
