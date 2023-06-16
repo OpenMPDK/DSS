@@ -50,20 +50,11 @@ checksubmodules
 # Set artifacts build directory paths
 target_build_dir="${DSS_DIR}/dss-sdk/df_out"
 host_build_dir="${DSS_DIR}/dss-sdk/host_out"
-nkv_agent_build_dir="${DSS_DIR}/dss-sdk/ufm/agents/nkv_agent"
-ufm_build_dir="${DSS_DIR}/dss-sdk/ufm/fabricmanager"
-ufm_broker_build_dir="${DSS_DIR}/dss-sdk/ufm/ufm_msg_broker"
 
 echo "Removing existing artifacts from artifacts directory..."
 rm -f "${ARTIFACTS_DIR}"/nkv-target-*.tgz
 rm -f "${ARTIFACTS_DIR}"/nkv-sdk-bin-*.tgz
-rm -f "${ARTIFACTS_DIR}"/nkvagent-*.rpm
-rm -f "${ARTIFACTS_DIR}"/ufm-*.rpm
-rm -f "${ARTIFACTS_DIR}"/ufmbroker-*.rpm
 
 echo "Copying artifacts to artifacts directory..."
 cp "${target_build_dir}"/nkv-target-*.tgz "${ARTIFACTS_DIR}"
 cp "${host_build_dir}"/nkv-sdk-bin-*.tgz "${ARTIFACTS_DIR}"
-cp "${nkv_agent_build_dir}"/nkvagent-*.rpm "${ARTIFACTS_DIR}"
-cp "${ufm_build_dir}"/ufm-*.rpm "${ARTIFACTS_DIR}"
-cp "${ufm_broker_build_dir}"/ufmbroker-*.rpm "${ARTIFACTS_DIR}"
