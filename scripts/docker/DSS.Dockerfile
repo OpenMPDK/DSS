@@ -58,14 +58,15 @@ RUN set -eux \
     chmod 0777 /var/cache/yum && \
     mkdir /.cache && \
     chmod 0777 /.cache && \
-    python3 -m pip install --no-cache-dir --upgrade --no-compile pip && \
-    python3 -m pip install --no-cache-dir --no-compile pip \
+    python3 -m pip install --no-cache-dir --upgrade --no-compile --upgrade pip && \
+    python3 -m pip install --no-cache-dir --no-compile \
         "ansible>=2.9,<2.10" \
         ansible-lint==5.3.2 \
         gcovr==5.0 \
         pybind11 \
         pycodestyle==2.8.0 \
-        shellcheck-py==0.8.0.3 && \
+        shellcheck-py==0.8.0.3 \
+        yamllint==1.26.3 && \
     find /usr/lib/ -name '__pycache__' -print0 | xargs -0 -n1 rm -rf && \
     find /usr/lib/ -name '*.pyc' -print0 | xargs -0 -n1 rm -rf && \
     git config --global user.email "docker@msl.lab" && \
