@@ -4,57 +4,79 @@ Disaggregated Storage Solution
 
 ## What is DSS
 
-Samsung has developed DSS, a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
+DSS is a rack-scalable, very high read-bandwidth-optimized, Amazon S3-compatible object storage solution developed by Samsung. It utilizes a disaggregated architecture, enabling independent scaling of storage and compute. It features an end-to-end KV semantic communication stack, entirely eliminating the legacy software storage stack. All storage communication uses the NVMeOf-KV-RDMA protocol introduced and open sourced by Samsung. With zero-copy transfer, it achieves high end-to-end performance. The DSS client-side stack includes a high performance wrapper library for simple application integration. Applications utilizing the DSS client library eliminate the need for bucket semantics, key distribution and load balancing between server-side S3 endpoints.
 
 [![How to build, deploy, and use DSS software](https://img.youtube.com/vi/fpAFvLhTpqw/0.jpg)](https://youtu.be/fpAFvLhTpqw "How to build, deploy, and use DSS software")
 
 [How to build, deploy, and use DSS software](https://youtu.be/fpAFvLhTpqw)
 
-## Prerequisites
+## Build DSS - Docker
 
-### Operating system requirements
+DSS is optimally built via Docker using the scripts documented below.
+
+### Build All - Docker
+
+Build all of the DSS artifacts and its dependency artifacts using one script:
+
+```bash
+./scripts/docker/build_all.sh
+```
+
+### Build Dependencies - Docker
+
+Optionally, build only the dependencies artifacts:
+
+```bash
+./scripts/docker/build_gcc.sh
+./scripts/docker/build_aws-sdk.sh
+./scripts/docker/build_kernel.sh
+./scripts/docker/build_mlnx-tools.sh
+```
+
+### Build DSS Artifacts - Docker
+
+Optionally, build only the DSS artifacts:
+
+```bash
+./scripts/docker/build_dss-sdk.sh
+./scripts/docker/build_minio.sh
+./scripts/docker/build_dss-client.sh
+./scripts/docker/build_datamover.sh
+```
+
+## Build DSS
+
+Alternatively, DSS can be built natively, but all dependencies must be installed first.
+
+### Prerequisites
+
+#### Operating system requirements
 
 DSS build and runtime is presently supported on CentOS 7.8.
 
-### Build package dependencies
+#### Build package dependencies
 
 Install the following packages / modules to build DSS and its external dependencies:
 
 ```bash
-sudo yum install epel-release -y
-sudo yum group install "Development Tools" -y
-sudo yum install bc boost-devel check cmake cmake3 CUnit-devel dejagnu dpkg elfutils-libelf-devel expect \
-  glibc-devel jemalloc-devel Judy-devel libaio-devel libcurl-devel libuuid-devel meson ncurses-devel numactl-devel \
-  openssl-devel pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb ruby-devel \
+sudo yum install epel-release centos-release-scl-rh -y
+sudo yum install bc bison boost-devel cmake cmake3 CUnit-devel devtoolset-11 dpkg elfutils-libelf-devel \
+  flex gcc gcc-c++ git glibc-devel gmp-devel jemalloc-devel Judy-devel libaio-devel libcurl-devel libmpc-devel \
+  libuuid-devel make man-db meson mpfr-devel ncurses-devel numactl-devel openssl openssl-devel patch \
+  pulseaudio-libs-devel python3 python3-devel python3-pip rdma-core-devel redhat-lsb-core rpm-build \
   snappy-devel tbb-devel wget zlib-devel -y
-sudo python3 -m pip install pybind11
-sudo gem install ffi -v 1.12.2
-sudo gem install git -v 1.6.0
-sudo gem install rb-inotify -v 0.9.10
-sudo gem install rexml -v 3.2.3
-sudo gem install backports -v 3.21.0
-sudo gem install fpm
+sudo python3 -m pip install pybind11 gcovr==5.0
 ```
-
-## Build DSS
 
 **NOTE: User-built GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
 
 On initial build:
 
-1. Build GCC
-2. Install the resulting GCC RPM
-3. Build AWS-SDK-CPP
-4. Install the resulting AWS-SDK-CPP RPM.
-5. Run the `build_all.sh` script
-
-```bash
-./scripts/build_gcc.sh
-sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y
-./scripts/build_aws-sdk.sh
-sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-1.8.99-0.x86_64.rpm -y
-./scripts/build_all.sh
-```
+1. Build GCC: `./scripts/build_gcc.sh`
+2. Install the resulting GCC RPM: `sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y`
+3. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
+4. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
+5. Run the `build_all.sh` script: `./scripts/build_all.sh`
 
 Once the GCC and AWS RPMs are installed, only the `build_all.sh` script needs to be run on subsequent builds.
 
@@ -75,32 +97,6 @@ DSS individual components:
 * Build dss-minio: `./scripts/build_minio.sh`
 * Build dss-client: `./scripts/build_dss-client.sh`
 * Build dss-datamover: `./scripts/build_datamover.sh`
-
-## Build Docker
-
-DSS can alternatively be built via Docker.
-
-```bash
-./scripts/docker/build_all.sh
-```
-
-To build individual DSS dependencies via Docker:
-
-```bash
-./scripts/docker/build_gcc.sh
-./scripts/docker/build_aws-sdk.sh
-./scripts/docker/build_kernel.sh
-./scripts/docker/build_mlnx-tools.sh
-```
-
-To build individual DSS components from Docker:
-
-```bash
-./scripts/docker/build_dss-sdk.sh
-./scripts/docker/build_minio.sh
-./scripts/docker/build_dss-client.sh
-./scripts/docker/build_datamover.sh
-```
 
 ## Deploy DSS
 
