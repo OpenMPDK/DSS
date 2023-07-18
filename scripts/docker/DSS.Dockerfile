@@ -14,6 +14,7 @@ RUN set -eux \
         boost-devel \
         cmake \
         cmake3 \
+        cppunit-devel \
         CUnit-devel \
         devtoolset-11 \
         dpkg \
