@@ -39,6 +39,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Check for submodules in update init recursive if missing
 checksubmodules
 
+# Install S3-Benchmark dependencies
+sudo yum install "$(cat "$S3_BENCHMARK_DIR"/dependencies.txt)" -y
+
 # Build DSS Client Library
 "$DSS_CLIENT_DIR/scripts/build.sh"
 
