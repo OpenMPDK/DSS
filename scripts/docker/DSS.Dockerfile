@@ -24,6 +24,7 @@ RUN set -eux \
         git \
         glibc-devel \
         gmp-devel \
+        golang \
         jemalloc-devel \
         Judy-devel \
         libaio-devel \
