@@ -1,7 +1,4 @@
-variables:
-  CI_CONF_DIR: .config/ci
-
-include: $CI_CONF_DIR/gitlab/defaults.yml
+include: .config/ci/gitlab/defaults.yml
 
 stages:
   - test

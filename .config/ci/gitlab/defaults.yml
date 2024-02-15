@@ -5,3 +5,6 @@
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_PIPELINE_SOURCE == "web"
+
+variables:
+  CI_CONF_DIR: .config/ci
