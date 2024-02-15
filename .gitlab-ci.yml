@@ -38,9 +38,6 @@ sync-github:
   trigger:
     include:
       - local: $CI_CONF_DIR/gitlab/sync-github.yml
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
-    - when: manual
   variables:
     GITHUB_PROJECT: OpenMPDK
     GITHUB_REPO: DSS
