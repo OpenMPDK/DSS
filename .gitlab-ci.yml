@@ -21,7 +21,4 @@ sync-github:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
     - when: manual
   variables:
-    GITHUB_PROJECT: OpenMPDK
     GITHUB_REPO: DSS
-    GITHUB_BRANCH: master
-    GITLAB_BRANCH: master

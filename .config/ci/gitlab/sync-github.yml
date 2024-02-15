@@ -13,3 +13,6 @@ sync-github:
     - git push -u origin --tags
   variables:
     GIT_STRATEGY: none
+    GITHUB_PROJECT: OpenMPDK
+    GITHUB_BRANCH: master
+    GITLAB_BRANCH: master
