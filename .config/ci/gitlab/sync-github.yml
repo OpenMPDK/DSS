@@ -13,6 +13,3 @@ sync-github:
     - git push -u origin --tags
   variables:
     GIT_STRATEGY: none
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
-    - when: manual
