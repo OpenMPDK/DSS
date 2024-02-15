@@ -37,7 +37,7 @@ sync-github:
   stage: sync
   trigger:
     include:
-      -local: $CI_CONF_DIR/gitlab/sync-github.yml
+      - local: $CI_CONF_DIR/gitlab/sync-github.yml
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
     - when: manual
