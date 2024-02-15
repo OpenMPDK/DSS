@@ -1,0 +1,15 @@
+sync-github:
+  image:
+    name: alpine:3.19.1
+  before_script:
+    - apk add git
+    - git config --global http.sslVerify false
+  script:
+    - mkdir $GITHUB_REPO && cd $GITHUB_REPO
+    - git clone --branch $GITHUB_BRANCH https://github.com/$GITHUB_PROJECT/$GITHUB_REPO .
+    - git remote rename origin old-origin
+    - git remote add origin https://$CI_USERNAME:$CI_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git 
+    - git push origin $GITHUB_BRANCH:$GITLAB_BRANCH
+    - git push -u origin --tags
+  variables:
+    GIT_STRATEGY: none
