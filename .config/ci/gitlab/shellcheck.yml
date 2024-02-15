@@ -1,0 +1,20 @@
+variables:
+  CI_CONF_DIR: .config/ci
+  SHELLCHECK_VER: v0.9.0
+
+shellcheck:
+  stage: test
+  image: koalaman/shellcheck-alpine:$SHELLCHECK_VER
+  before_script:
+    - apk update
+    - apk add git xmlstarlet
+    - shellcheck --version
+  script:
+    - git ls-files --exclude='*.sh' --ignored -c -z |
+      xargs -t --no-run-if-empty -0 shellcheck --format=checkstyle |
+      xmlstarlet tr $CI_CONF_DIR/shellcheck/checkstyle2junit.xslt >
+      shellcheck.xml
+  artifacts:
+    when: always
+    reports:
+      junit: shellcheck.xml
