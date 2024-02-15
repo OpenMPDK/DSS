@@ -53,4 +53,4 @@ sync-master:
     GIT_STRATEGY: none
     SPDK_URL: https://github.com/OpenMPDK/DSS
     GITHUB_BRANCH: master
-    GITLAB_BRANCH: validate-schedule-workflow
+    GITLAB_BRANCH: master
