@@ -48,7 +48,7 @@ sync-master:
     - git push -u origin --tags
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
-    - when: manual && $SCHEDULE_TYPE == "sync"
+    - when: manual
   variables:
     GIT_STRATEGY: none
     SPDK_URL: https://github.com/OpenMPDK/DSS
