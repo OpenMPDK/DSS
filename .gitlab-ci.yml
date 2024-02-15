@@ -36,8 +36,9 @@ shellcheck:
 sync-master:
   stage: sync
   image:
-    name: bitnami/git:2.43.0
+    name: alpine:3.19.1
   before_script:
+    - apk add git
     - git config --global http.sslVerify false
   script:
     - mkdir spdk && cd spdk
