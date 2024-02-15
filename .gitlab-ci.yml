@@ -9,16 +9,17 @@ shellcheck:
   trigger:
     include:
       - local: $CI_CONF_DIR/gitlab/shellcheck.yml
+    strategy: depend
   rules:
-    - !reference [.default_rules, rules]
+    - !reference [.default_rules, merge_push_rules]
 
 sync-github:
   stage: sync
   trigger:
     include:
       - local: $CI_CONF_DIR/gitlab/sync-github.yml
+    strategy: depend
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
-    - when: manual
+    - !reference [.default_rules, sync_rules]
   variables:
     GITHUB_REPO: DSS
