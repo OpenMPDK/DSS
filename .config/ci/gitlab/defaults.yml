@@ -10,7 +10,3 @@
 
 variables:
   CI_CONF_DIR: .config/ci
-
-default:
-  trigger:
-    strategy: depend
