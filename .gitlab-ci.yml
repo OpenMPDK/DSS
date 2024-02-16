@@ -21,6 +21,5 @@ sync-github:
     strategy: depend
   rules:
     - !reference [.default_rules, sync_rules]
-  allow_failure: true
   variables:
     GITHUB_REPO: DSS
