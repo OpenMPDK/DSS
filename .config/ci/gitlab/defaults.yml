@@ -1,10 +1,4 @@
 .default_rules:
-  merge_push_rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "validate-schedule-workflow" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web"
   sync_rules:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
     - when: manual
@@ -12,3 +6,11 @@
 variables:
   CI_CONF_DIR: .config/ci
   GITLAB_CONF_DIR: $CI_CONF_DIR/gitlab
+
+default:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "validate-schedule-workflow" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
