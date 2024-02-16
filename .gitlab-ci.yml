@@ -1,25 +1,12 @@
-include: .config/ci/gitlab/defaults.yml
+include:
+  - local: .config/ci/gitlab/defaults.yml
+  - local: .config/ci/gitlab/shellcheck.yml
+  - local: .config/ci/gitlab/sync-github.yml
 
 stages:
   - test
   - sync
 
-shellcheck:
-  stage: test
-  trigger:
-    include:
-      - local: $GITLAB_CONF_DIR/shellcheck.yml
-    strategy: depend
-  rules:
-    - !reference [.default_rules, merge_push_rules]
-
 sync-github:
-  stage: sync
-  trigger:
-    include:
-      - local: $GITLAB_CONF_DIR/sync-github.yml
-    strategy: depend
-  rules:
-    - !reference [.default_rules, sync_rules]
   variables:
     GITHUB_REPO: DSS
