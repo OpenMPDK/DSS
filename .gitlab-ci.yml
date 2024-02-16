@@ -4,7 +4,7 @@ include:
   - local: .config/ci/gitlab/sync-github.yml
 
 stages:
-  - test
+  - lint
   - sync
 
 sync-github:

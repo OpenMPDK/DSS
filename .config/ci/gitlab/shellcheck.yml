@@ -1,5 +1,5 @@
 shellcheck:
-  stage: test
+  stage: lint
   image: koalaman/shellcheck-alpine:$SHELLCHECK_VER
   before_script:
     - apk update
