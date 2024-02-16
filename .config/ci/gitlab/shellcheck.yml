@@ -52,7 +52,6 @@ shellcheck:
           </xsl:template>
         </xsl:stylesheet>
       EOL
-    - cat checkstyle2junit.xslt
   script:
     - git ls-files --exclude='*.sh' --ignored -c -z |
       xargs -t --no-run-if-empty -0 shellcheck --format=checkstyle |
