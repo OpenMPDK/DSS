@@ -8,7 +8,7 @@ shellcheck:
   stage: test
   trigger:
     include:
-      - local: $CI_CONF_DIR/gitlab/shellcheck.yml
+      - local: $GITLAB_CONF_DIR/shellcheck.yml
     strategy: depend
   rules:
     - !reference [.default_rules, merge_push_rules]
@@ -17,7 +17,7 @@ sync-github:
   stage: sync
   trigger:
     include:
-      - local: $CI_CONF_DIR/gitlab/sync-github.yml
+      - local: $GITLAB_CONF_DIR/sync-github.yml
     strategy: depend
   rules:
     - !reference [.default_rules, sync_rules]
