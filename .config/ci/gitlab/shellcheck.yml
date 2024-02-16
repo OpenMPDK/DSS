@@ -5,10 +5,11 @@ shellcheck:
     - apk update
     - apk add git xmlstarlet
     - shellcheck --version
+    - curl -sSLOJ https://$CI_SERVER_HOST/dfs/dss/dss-raw/validate-schedule-workflow/$CI_CONF_DIR/shellcheck/checkstyle2junit.xslt
   script:
     - git ls-files --exclude='*.sh' --ignored -c -z |
       xargs -t --no-run-if-empty -0 shellcheck --format=checkstyle |
-      xmlstarlet tr $CI_CONF_DIR/shellcheck/checkstyle2junit.xslt >
+      xmlstarlet tr checkstyle2junit.xslt >
       shellcheck.xml
   artifacts:
     when: always
