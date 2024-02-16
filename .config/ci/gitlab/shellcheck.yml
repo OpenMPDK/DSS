@@ -3,7 +3,7 @@ shellcheck:
   image: koalaman/shellcheck-alpine:$SHELLCHECK_VER
   before_script:
     - apk update
-    - apk add git xmlstarlet wget
+    - apk add git xmlstarlet
     - shellcheck --version
     - |
       cat > checkstyle2junit.xslt <<EOL
