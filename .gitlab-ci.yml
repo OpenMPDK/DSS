@@ -10,6 +10,8 @@ shellcheck:
     include:
       - local: $GITLAB_CONF_DIR/shellcheck.yml
     strategy: depend
+  rules:
+    - !reference [.default_rules, merge_push_rules]
 
 sync-github:
   stage: sync
