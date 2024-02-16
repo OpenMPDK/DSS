@@ -1,7 +1,3 @@
-variables:
-  CI_CONF_DIR: .config/ci
-  SHELLCHECK_VER: v0.9.0
-
 shellcheck:
   stage: test
   image: koalaman/shellcheck-alpine:$SHELLCHECK_VER
@@ -18,5 +14,7 @@ shellcheck:
     when: always
     reports:
       junit: shellcheck.xml
+  variables:
+    SHELLCHECK_VER: v0.9.0
   rules:
     - !reference [.default_rules, merge_push_rules]
