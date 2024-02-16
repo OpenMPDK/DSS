@@ -16,5 +16,6 @@ shellcheck:
       junit: shellcheck.xml
   variables:
     SHELLCHECK_VER: v0.9.0
+  needs: []
   rules:
     - !reference [.default_rules, merge_push_rules]
