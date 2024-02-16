@@ -3,7 +3,7 @@ shellcheck:
   image: koalaman/shellcheck-alpine:$SHELLCHECK_VER
   before_script:
     - apk update
-    - apk add git xmlstarlet
+    - apk add git xmlstarlet curl
     - shellcheck --version
     - curl -sSLOJ https://$CI_SERVER_HOST/dfs/dss/dss-raw/validate-schedule-workflow/$CI_CONF_DIR/shellcheck/checkstyle2junit.xslt
   script:
