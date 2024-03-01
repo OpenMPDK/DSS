@@ -18,4 +18,4 @@ sync-github:
     GITHUB_BRANCH: master
     GITLAB_BRANCH: master
   rules:
-    - !reference [.default_rules, sync_rules]
+    - !reference [.default_rules, scheduled_sync]
