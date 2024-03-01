@@ -1,14 +1,23 @@
 .default_rules:
-  merge_push_rules:
+  merge_only:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       variables:
         BRANCH_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
         SONAR_BRANCH: ''
-    - if: $CI_COMMIT_BRANCH == "validate-schedule-workflow" && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_PIPELINE_SOURCE == "web"
-  sync_rules:
+  merge_and_push:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        BRANCH_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+        SONAR_BRANCH: ''
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH =~ /^stable\/.*/ && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+  scheduled_sync:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
 
 variables:
@@ -19,4 +28,4 @@ variables:
 
 default:
   image:
-    name: dss-build_master
+    name: dss-build_$BRANCH_NAME
