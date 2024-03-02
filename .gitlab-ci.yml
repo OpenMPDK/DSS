@@ -1,7 +1,7 @@
 include:
-  - local: .config/ci/gitlab/defaults.yml
-  - local: .config/ci/gitlab/shellcheck.yml
-  - local: .config/ci/gitlab/sync-github.yml
+  - local: .gitlab/defaults.yml
+  - local: .gitlab/shellcheck.yml
+  - local: .gitlab/sync-github.yml
 
 stages:
   - lint
