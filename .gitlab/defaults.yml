@@ -24,8 +24,6 @@
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
 
 variables:
-  CI_CONF_DIR: .config/ci
-  GITLAB_CONF_DIR: $CI_CONF_DIR/gitlab
   BRANCH_NAME: $CI_COMMIT_BRANCH
   SONAR_BRANCH: -Dsonar.branch.name=$CI_COMMIT_BRANCH
 
