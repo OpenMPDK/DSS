@@ -1,0 +1,12 @@
+include:
+  - local: .gitlab/defaults.yml
+  - local: .gitlab/shellcheck.yml
+  - local: .gitlab/sync-github.yml
+
+stages:
+  - lint
+  - sync
+
+sync-github:
+  variables:
+    GITHUB_REPO: DSS
