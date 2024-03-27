@@ -13,13 +13,13 @@
         BRANCH_NAME: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
         SONAR_BRANCH: ''
     - if: $CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_BRANCH =~ /^stable\/.*/ && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH =~ /^(stable|feature)\/.*/ && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: $CI_PIPELINE_SOURCE == "web"
   push_only:
     - if: $CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_COMMIT_BRANCH =~ /^stable\/.*/ && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH =~ /^(stable|feature)\/.*/ && $CI_PIPELINE_SOURCE == "push"
   scheduled_sync:
     - if: $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "sync"
 
