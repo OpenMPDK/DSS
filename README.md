@@ -103,17 +103,17 @@ Dependency artifacts for GCC, kernel, aws-sdk-cpp, and mlnx-tools are staged und
 
 DSS Dependency build scripts:
 
-* Build GCC: `./scripts/build_gcc.sh`
-* Build aws-sdk-cpp: `./scripts/build_aws-sdk.sh`
-* Build kernel: `./scripts/build_kernel.sh`
-* Build mlnx-tools: `./scripts/build_mlnx-tools.sh`
+- Build GCC: `./scripts/build_gcc.sh`
+- Build aws-sdk-cpp: `./scripts/build_aws-sdk.sh`
+- Build kernel: `./scripts/build_kernel.sh`
+- Build mlnx-tools: `./scripts/build_mlnx-tools.sh`
 
 DSS individual components:
 
-* Build dss-sdk: `./scripts/build_dss-sdk.sh`
-* Build dss-minio: `./scripts/build_minio.sh`
-* Build dss-client: `./scripts/build_dss-client.sh`
-* Build dss-datamover: `./scripts/build_datamover.sh`
+- Build dss-sdk: `./scripts/build_dss-sdk.sh`
+- Build dss-minio: `./scripts/build_minio.sh`
+- Build dss-client: `./scripts/build_dss-client.sh`
+- Build dss-datamover: `./scripts/build_datamover.sh`
 
 ## Deploy DSS
 
