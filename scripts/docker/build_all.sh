@@ -7,7 +7,6 @@ DOCKER_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 . "$DOCKER_DIR/../utils.sh"
 
 # DSS Dependencies
-"$DOCKER_DIR"/build_gcc.sh
 "$DOCKER_DIR"/build_aws-sdk.sh
 "$DOCKER_DIR"/build_kernel.sh
 "$DOCKER_DIR"/build_mlnx-tools.sh

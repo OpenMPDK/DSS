@@ -2,7 +2,6 @@ FROM centos:centos7.8.2003
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-COPY dss-ansible/artifacts/dss-gcc510-*.rpm ./
 COPY dss-ansible/artifacts/aws-sdk-cpp-*.rpm ./
 RUN set -eux \
     && yum install -y \
@@ -50,7 +49,6 @@ RUN set -eux \
         tbb-devel \
         wget \
         zlib-devel \
-        /dss-gcc510*.rpm \
         /aws-sdk-cpp*.rpm && \
     rm -f ./*.rpm && \
     yum clean all && \

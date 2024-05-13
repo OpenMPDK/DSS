@@ -38,7 +38,6 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 . "$SCRIPT_DIR/utils.sh"
 
 # Build dependency artificats
-"$SCRIPT_DIR/build_gcc.sh"
 "$SCRIPT_DIR/build_aws-sdk.sh"
 "$SCRIPT_DIR/build_kernel.sh"
 "$SCRIPT_DIR/build_mlnx-tools.sh"
