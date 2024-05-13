@@ -44,7 +44,6 @@ Build all of the DSS artifacts and its dependency artifacts using one script:
 Optionally, build only the dependencies artifacts:
 
 ```bash
-./scripts/docker/build_gcc.sh
 ./scripts/docker/build_aws-sdk.sh
 ./scripts/docker/build_kernel.sh
 ./scripts/docker/build_mlnx-tools.sh
@@ -85,25 +84,22 @@ sudo yum install bc bison boost-devel cmake cmake3 CUnit-devel devtoolset-11 dpk
 sudo python3 -m pip install pybind11 gcovr==5.0
 ```
 
-**NOTE: User-built GCC and AWS-SDK-CPP RPMs must be installed on the build machine.**
+**NOTE: User-built AWS-SDK-CPP RPM must be installed on the build machine.**
 
 On initial build:
 
-1. Build GCC: `./scripts/build_gcc.sh`
-2. Install the resulting GCC RPM: `sudo yum install ./dss-ansible/artifacts/dss-gcc510*.rpm -y`
-3. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
-4. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
-5. Run the `build_all.sh` script: `./scripts/build_all.sh`
+1. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
+2. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
+3. Run the `build_all.sh` script: `./scripts/build_all.sh`
 
-Once the GCC and AWS RPMs are installed, only the `build_all.sh` script needs to be run on subsequent builds.
+Once the AWS RPM is installed, only the `build_all.sh` script needs to be run on subsequent builds.
 
-Dependency artifacts for GCC, kernel, aws-sdk-cpp, and mlnx-tools are staged under `rpmbuilder` and `workspace` directories of your home directory by default. By leaving them in-place, re-build of these upstream components will be skipped on subsequent builds.
+Dependency artifacts for kernel, aws-sdk-cpp, and mlnx-tools are staged under `rpmbuilder` and `workspace` directories of your home directory by default. By leaving them in-place, re-build of these upstream components will be skipped on subsequent builds.
 
 ### Optional: Build individual components
 
 DSS Dependency build scripts:
 
-- Build GCC: `./scripts/build_gcc.sh`
 - Build aws-sdk-cpp: `./scripts/build_aws-sdk.sh`
 - Build kernel: `./scripts/build_kernel.sh`
 - Build mlnx-tools: `./scripts/build_mlnx-tools.sh`
