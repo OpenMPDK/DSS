@@ -65,7 +65,7 @@ RUN set -eux \
         "ansible>=2.9,<2.10" \
         ansible-lint==5.3.2 \
         gcovr==5.0 \
-        pybind11 \
+	pybind11==2.11.1 \
         pycodestyle==2.8.0 \
         shellcheck-py==0.8.0.3 \
         yamllint==1.26.3 && \
