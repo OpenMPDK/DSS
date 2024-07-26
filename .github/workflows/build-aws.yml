@@ -68,3 +68,6 @@ jobs:
           compute-type-override: ${{ inputs.compute-type-override }}
           buildspec-override: "./buildspec/${{ inputs.buildspec != '' && inputs.buildspec || format('{0}.yml', inputs.component) }}"
           image-override: "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-west-1.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ inputs.image != '' && inputs.image || format('dss-build_{0}', steps.nice_branchname.outputs.NICE_BRANCHNAME) }}"
+          env-vars-for-codebuild: SONAR_SCANNER_URL
+        env:
+          SONAR_SCANNER_URL: ${{ vars.SONAR_SCANNER_URL }}
