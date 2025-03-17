@@ -105,9 +105,10 @@ sudo python3 -m pip install pybind11==2.11.1 gcovr==5.0
 
 On initial build:
 
-1. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
-2. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
-3. Run the `build_all.sh` script: `./scripts/build_all.sh`
+1. Set up the build environment: `./scripts/build_pre.sh`
+2. Build AWS-SDK-CPP: `./scripts/build_aws-sdk.sh`
+3. Install the resulting AWS-SDK-CPP RPM: `sudo yum install ./dss-ansible/artifacts/aws-sdk-cpp-*.rpm -y`
+4. Run the `build_all.sh` script: `./scripts/build_all.sh`
 
 Once the AWS RPM is installed, only the `build_all.sh` script needs to be run on subsequent builds.
 
